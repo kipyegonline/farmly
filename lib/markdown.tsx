@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
 import { BLOCKS } from "@contentful/rich-text-types";
+import ContentfulImage from "./contentful-image";
 
 interface Asset {
   sys: {
@@ -28,10 +29,15 @@ function RichTextAsset({
   id: string;
   assets: Asset[] | undefined;
 }) {
+  const dims = globalThis?.window
+    ? window.matchMedia("(max-width:1280px)").matches
+    : false;
   const asset = assets?.find((asset) => asset.sys.id === id);
 
   if (asset?.url) {
-    return <Image src={asset.url} layout="fill" alt={asset.description} />;
+    return (
+      <ContentfulImage src={asset.url} width={dims ? 1000 : 480} height={400} />
+    ); //<Image src={asset.url} layout="fill" alt={asset.description} />;
   }
 
   return null;
