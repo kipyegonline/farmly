@@ -1,40 +1,35 @@
+import { MantineProvider, createTheme } from "@mantine/core";
+import { generateColors } from "@mantine/colors-generator";
+import { Inter, Poppins } from "next/font/google";
+import { NavigationProgress } from "@mantine/nprogress";
 import "./globals.css";
-import { Inter } from "next/font/google";
+// core styles are required for all packages
+import "@mantine/core/styles.css";
+import "@mantine/nprogress/styles.css";
 import { EXAMPLE_PATH, CMS_NAME } from "@/lib/constants";
+import Footer from "@/components/ui/Footer";
 
-const inter = Inter({
-  variable: "--font-inter",
+const COLORS = {
+  primaryColor: "#228B22",
+  secondaryColor: "#F0E68C ",
+  accent: "#8B0000",
+};
+const poppins = Poppins({
+  variable: "--font-poppins",
   subsets: ["latin"],
   display: "swap",
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
 });
-
-function Footer() {
-  return (
-    <footer className="bg-accent-1 border-t border-accent-2">
-      <div className="container mx-auto px-5">
-        <div className="py-28 flex flex-col lg:flex-row items-center">
-          <h3 className="text-4xl lg:text-5xl font-bold tracking-tighter leading-tight text-center lg:text-left mb-10 lg:mb-0 lg:pr-4 lg:w-1/2">
-            Built with Next.js.
-          </h3>
-          <div className="flex flex-col lg:flex-row justify-center items-center lg:pl-4 lg:w-1/2">
-            <a
-              href="https://nextjs.org/docs"
-              className="mx-3 bg-black hover:bg-white hover:text-black border border-black text-white font-bold py-3 px-12 lg:px-8 duration-200 transition-colors mb-6 lg:mb-0"
-            >
-              Read Documentation
-            </a>
-            <a
-              href={`https://github.com/vercel/next.js/tree/canary/examples/${EXAMPLE_PATH}`}
-              className="mx-3 font-bold hover:underline"
-            >
-              View on GitHub
-            </a>
-          </div>
-        </div>
-      </div>
-    </footer>
-  );
-}
+const theme = createTheme({
+  fontFamily: "Arial, Verdana,Poppins, sans-serif",
+  headings: { fontFamily: "Poppins sans-serif " },
+  primaryColor: "primary",
+  colors: {
+    primary: generateColors("#228B22"),
+    secondary: generateColors(COLORS.secondaryColor),
+    accent: generateColors(COLORS.accent),
+  },
+});
 
 export default function RootLayout({
   children,
@@ -42,10 +37,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className={poppins.variable}>
       <body>
         <section className="min-h-screen">
-          <main>{children}</main>
+          <main>
+            <MantineProvider theme={theme}>
+              <NavigationProgress />
+              {children}
+            </MantineProvider>
+          </main>
           <Footer />
         </section>
       </body>
