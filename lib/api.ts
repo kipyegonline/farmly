@@ -47,8 +47,11 @@ body  {
     }
   }
     }`;
+const prev = process.env.CONTENTFUL_PREVIEW_ACCESS_TOKEN;
+const prod = process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKENN;
+const spaceId = process.env.CONTENTFUL_SPACE_ID;
 
-async function fetchGraphQL(query: string, preview = !false): Promise<any> {
+async function fetchGraphQL(query: string, preview = true): Promise<any> {
   return fetch(
     `https://graphql.contentful.com/content/v1/spaces/${process.env.CONTENTFUL_SPACE_ID}`,
     {

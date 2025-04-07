@@ -1,5 +1,9 @@
-import { MantineProvider, createTheme } from "@mantine/core";
-import { generateColors } from "@mantine/colors-generator";
+import {
+  MantineProvider,
+  createTheme,
+  MantineColorsTuple,
+} from "@mantine/core";
+import { generateColors, generateColorsMap } from "@mantine/colors-generator";
 import { Inter, Poppins } from "next/font/google";
 import { NavigationProgress } from "@mantine/nprogress";
 import "./globals.css";
@@ -8,10 +12,34 @@ import "@mantine/core/styles.css";
 import "@mantine/nprogress/styles.css";
 import { EXAMPLE_PATH, CMS_NAME } from "@/lib/constants";
 import Footer from "@/components/ui/Footer";
-
+const primaryColours: MantineColorsTuple = [
+  "#effbef",
+  "#dcf4dc",
+  "#b5eab4",
+  "#8bdf89",
+  "#68d665",
+  "#53d04f",
+  "#47ce43",
+  "#39b535",
+  "#30a12d",
+  "#228b22",
+];
+const secondaryColours: MantineColorsTuple = [
+  "#fefce3",
+  "#faf6d1",
+  "#f4eca6",
+  "#ede176",
+  "#e8d84f",
+  "#e4d335",
+  "#e3d026",
+  "#c9b717",
+  "#b2a30b",
+  "#998c00",
+];
+const accentColours = [];
 const COLORS = {
   primaryColor: "#228B22",
-  secondaryColor: "#F0E68C ",
+  secondaryColor: "#F0E68C",
   accent: "#8B0000",
 };
 const poppins = Poppins({
@@ -25,9 +53,9 @@ const theme = createTheme({
   headings: { fontFamily: "Poppins sans-serif " },
   primaryColor: "primary",
   colors: {
-    primary: generateColors("#228B22"),
-    secondary: generateColors(COLORS.secondaryColor),
-    accent: generateColors(COLORS.accent),
+    primary: primaryColours,
+    secondary: secondaryColours,
+    accent: secondaryColours, //generateColors(COLORS.accent),
   },
 });
 
