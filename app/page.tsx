@@ -60,7 +60,7 @@ export default async function Page() {
 
   const heroPost = allPosts?.[0];
   const morePosts = allPosts?.slice();
-  console.log(`<|======|>`, allPosts);
+ 
   return (
     <div className="container mx-auto px-5">
       {heroPost && false && (

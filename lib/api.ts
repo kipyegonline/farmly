@@ -75,14 +75,14 @@ function extractPost(fetchResponse: any): any {
 }
 
 function extractPostEntries(fetchResponse: any): any[] {
-  console.log(fetchResponse, ":fr");
+ 
   if (fetchResponse) {
     const {
       data: {
         payload: { books },
       },
     } = fetchResponse;
-    console.log(books, "hoooks");
+  
     return books; // fetchResponse?.payload.books;
   } else {
     return [];
