@@ -1,0 +1,390 @@
+"use client"
+import React, { useState, useEffect } from 'react';
+import { Box, Flex, Text, Card, Group, Stack, Burger, Drawer, Button } from '@mantine/core';
+import { Sun, Moon, Leaf, Clock, User, ChevronRight } from 'lucide-react';
+
+interface Article {
+  id: string;
+  title: string;
+  coverImage: string;
+  date: string | Date;
+  author: string;
+  slug: string;
+  excerpt: string;
+  category: string;
+  readTime: string;
+}
+
+const sampleArticles: Article[] = [
+  {
+    id: '1',
+    title: 'Regenerative Agriculture: The Future of Sustainable Farming',
+    coverImage: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&h=400&fit=crop',
+    date: '2024-05-20',
+    author: 'Sarah Mitchell',
+    slug: 'regenerative-agriculture-future',
+    excerpt: 'Discover how regenerative agriculture practices are revolutionizing farming by restoring soil health, increasing biodiversity, and creating more resilient food systems for the future.',
+    category: 'Sustainable Agriculture',
+    readTime: '5 min read'
+  },
+  {
+    id: '2',
+    title: 'Organic Pest Control Methods That Actually Work',
+    coverImage: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800&h=400&fit=crop',
+    date: '2024-05-19',
+    author: 'James Rodriguez',
+    slug: 'organic-pest-control-methods',
+    excerpt: 'Learn about effective organic pest control strategies that protect your crops while maintaining ecological balance and soil health without harmful chemicals.',
+    category: 'Organic Farming',
+    readTime: '7 min read'
+  },
+  {
+    id: '3',
+    title: 'Building Healthy Soil: The Foundation of Agroecology',
+    coverImage: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=800&h=400&fit=crop',
+    date: '2024-05-18',
+    author: 'Maria Santos',
+    slug: 'building-healthy-soil-agroecology',
+    excerpt: 'Understanding soil health is crucial for sustainable farming. Explore the microorganisms, nutrients, and practices that create thriving agricultural ecosystems.',
+    category: 'Agroecology',
+    readTime: '6 min read'
+  },
+  {
+    id: '4',
+    title: 'Water Conservation Techniques for Modern Farmers',
+    coverImage: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=800&h=400&fit=crop',
+    date: '2024-05-17',
+    author: 'David Chen',
+    slug: 'water-conservation-techniques',
+    excerpt: 'With water scarcity becoming a global concern, discover innovative irrigation methods and water management strategies that maximize efficiency while minimizing waste.',
+    category: 'Sustainable Agriculture',
+    readTime: '8 min read'
+  },
+  {
+    id: '5',
+    title: 'Companion Planting: Nature\'s Partnership in Agriculture',
+    coverImage: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800&h=400&fit=crop',
+    date: '2024-05-16',
+    author: 'Emily Johnson',
+    slug: 'companion-planting-guide',
+    excerpt: 'Harness the power of plant partnerships to naturally improve soil fertility, control pests, and increase crop yields through strategic companion planting.',
+    category: 'Organic Farming',
+    readTime: '4 min read'
+  }
+];
+
+const categories = [
+  'Sustainable Agriculture',
+  'Organic Farming',
+  'Agroecology',
+  'Soil Health',
+  'Water Management',
+  'Pest Control'
+];
+
+export default function Farmly() {
+  const [darkMode, setDarkMode] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', darkMode);
+  }, [darkMode]);
+
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
+
+  const handleArticleClick = (article: Article) => {
+  return ()=>  setSelectedArticle(article);
+  };
+
+  const formatDate = (date: string | Date) => {
+    return new Date(date).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  if (selectedArticle) {
+    return (
+      <Box className={`min-h-screen transition-colors duration-300 ${
+        darkMode ? 'dark bg-gray-900 text-white' : 'bg-white text-gray-900'
+      }`}>
+        {/* Header */}
+        <Box className={`sticky top-0 z-50 transition-colors duration-300 ${
+          darkMode ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'
+        } border-b backdrop-blur-md bg-opacity-95`}>
+          <Box className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <Flex justify="space-between" align="center" className="h-16">
+              <Button
+                variant="subtle"
+                onClick={() => setSelectedArticle(null)}
+                className="text-emerald-600 hover:text-emerald-700"
+              >
+                ← Back to Home
+              </Button>
+              <Button
+                variant="subtle"
+                onClick={toggleDarkMode}
+                className="p-2"
+              >
+                {darkMode ? <Sun size={20} /> : <Moon size={20} />}
+              </Button>
+            </Flex>
+          </Box>
+        </Box>
+
+        {/* Article Content */}
+        <Box className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <Box className="animate-in fade-in duration-700">
+            <Text className="text-emerald-600 font-medium mb-4">
+              {selectedArticle.category}
+            </Text>
+            <Text className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+              {selectedArticle.title}
+            </Text>
+            <Flex align="center" gap="md" className="mb-8 text-gray-600 dark:text-gray-400">
+              <Flex align="center" gap="xs">
+                <User size={16} />
+                <Text size="sm">{selectedArticle.author}</Text>
+              </Flex>
+              <Text size="sm">•</Text>
+              <Flex align="center" gap="xs">
+                <Clock size={16} />
+                <Text size="sm">{formatDate(selectedArticle.date)}</Text>
+              </Flex>
+              <Text size="sm">•</Text>
+              <Text size="sm">{selectedArticle.readTime}</Text>
+            </Flex>
+            <Box className="mb-8 rounded-lg overflow-hidden">
+              <img
+                src={selectedArticle.coverImage}
+                alt={selectedArticle.title}
+                className="w-full h-64 md:h-96 object-cover"
+              />
+            </Box>
+            <Box className="prose prose-lg max-w-none dark:prose-invert">
+              <Text className="text-xl leading-relaxed mb-6">
+                {selectedArticle.excerpt}
+              </Text>
+              <Text className="leading-relaxed mb-4">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+              </Text>
+              <Text className="leading-relaxed mb-4">
+                Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+              </Text>
+              <Text className="leading-relaxed">
+                Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
+              </Text>
+            </Box>
+          </Box>
+        </Box>
+      </Box>
+    );
+  }
+
+  return (
+    <Box className={`min-h-screen transition-colors duration-300 ${
+      darkMode ? 'dark bg-gray-900 text-white' : 'bg-white text-gray-900'
+    }`}>
+      {/* Header */}
+      <Box className={`sticky top-0 z-50 transition-colors duration-300 ${
+        darkMode ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'
+      } border-b backdrop-blur-md bg-opacity-95`}>
+        <Box className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Desktop Header */}
+          <Flex justify="space-between" align="center" className="h-20 hidden md:flex">
+            <Box className="animate-in slide-in-from-left duration-700">
+              <Flex align="center" gap="md">
+                <Box className="p-2 bg-emerald-100 dark:bg-emerald-900 rounded-lg">
+                  <Leaf className="text-emerald-600" size={28} />
+                </Box>
+                <Box>
+                  <Text className="text-2xl font-bold text-emerald-700 dark:text-emerald-400">
+                    Farmly
+                  </Text>
+                  <Text className="text-sm text-gray-600 dark:text-gray-400">
+                    Sustainable Agriculture News
+                  </Text>
+                </Box>
+              </Flex>
+            </Box>
+            <Button
+              variant="subtle"
+              onClick={toggleDarkMode}
+              className="p-2 animate-in slide-in-from-right duration-700"
+            >
+              {darkMode ? <Sun size={20} /> : <Moon size={20} />}
+            </Button>
+          </Flex>
+
+          {/* Mobile Header */}
+          <Flex justify="space-between" align="center" className="h-16 md:hidden">
+            <Box className="animate-in slide-in-from-left duration-700">
+              <Flex align="center" gap="sm">
+                <Box className="p-1.5 bg-emerald-100 dark:bg-emerald-900 rounded-lg">
+                  <Leaf className="text-emerald-600" size={20} />
+                </Box>
+                <Text className="text-lg font-bold text-emerald-700 dark:text-emerald-400">
+                  Farmly
+                </Text>
+              </Flex>
+            </Box>
+            <Flex align="center" gap="sm">
+              <Button
+                variant="subtle"
+                onClick={toggleDarkMode}
+                className="p-2"
+              >
+                {darkMode ? <Sun size={18} /> : <Moon size={18} />}
+              </Button>
+              <Burger
+                opened={mobileMenuOpen}
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="md:hidden"
+              />
+            </Flex>
+          </Flex>
+        </Box>
+      </Box>
+
+      {/* Mobile Menu Drawer */}
+      <Drawer
+        opened={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+        position="right"
+        size="sm"
+        className="md:hidden"
+      >
+        <Stack gap="lg" className="p-4">
+          <Text className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 font-semibold">
+            Categories
+          </Text>
+          {categories.map((category, index) => (
+            <Text
+              key={category}
+              className="cursor-pointer hover:text-emerald-600 transition-colors animate-in slide-in-from-right duration-300"
+              style={{ animationDelay: `${index * 100}ms` }}
+            >
+              {category}
+            </Text>
+          ))}
+        </Stack>
+      </Drawer>
+
+      {/* Main Content */}
+      <Box className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Flex gap="xl" className="relative">
+          {/* Articles Section */}
+          <Box className="flex-1">
+            <Text className="text-3xl md:text-4xl font-bold mb-8 animate-in slide-in-from-bottom duration-700">
+              Latest in Sustainable Agriculture
+            </Text>
+            
+            <Stack gap="xl">
+              {sampleArticles.map((article, index) => (
+                <Card
+                  key={article.id}
+                  className={`group cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border ${
+                    darkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'
+                  } animate-in slide-in-from-bottom duration-700`}
+                  style={{ animationDelay: `${(index + 1) * 200}ms` }}
+                  onClick={handleArticleClick(article)}
+                >
+                  <Flex gap="lg" className="flex-col md:flex-row">
+                    <Box className="md:w-1/3">
+                      <Box className="relative overflow-hidden rounded-lg">
+                        <img
+                          src={article.coverImage}
+                          alt={article.title}
+                          className="w-full h-48 md:h-32 object-cover transition-transform duration-300 group-hover:scale-105"
+                        />
+                        <Box className="absolute top-3 left-3">
+                          <Text className="bg-emerald-600 text-white px-2 py-1 rounded text-xs font-medium">
+                            {article.category}
+                          </Text>
+                        </Box>
+                      </Box>
+                    </Box>
+                    
+                    <Box className="md:w-2/3">
+                      <Stack gap="sm">
+                        <Text className="text-xl md:text-2xl font-bold line-clamp-2 group-hover:text-emerald-600 transition-colors">
+                          {article.title}
+                        </Text>
+                        
+                        <Text className="text-gray-600 dark:text-gray-400 line-clamp-3 leading-relaxed">
+                          {article.excerpt}
+                        </Text>
+                        
+                        <Flex align="center" gap="md" className="text-sm text-gray-500 dark:text-gray-400">
+                          <Flex align="center" gap="xs">
+                            <User size={14} />
+                            <Text>{article.author}</Text>
+                          </Flex>
+                          <Text>•</Text>
+                          <Flex align="center" gap="xs">
+                            <Clock size={14} />
+                            <Text>{formatDate(article.date)}</Text>
+                          </Flex>
+                          <Text>•</Text>
+                          <Text>{article.readTime}</Text>
+                        </Flex>
+                      </Stack>
+                    </Box>
+                  </Flex>
+                </Card>
+              ))}
+            </Stack>
+          </Box>
+
+          {/* Sidebar - Hidden on mobile */}
+          <Box className="w-80 hidden lg:block">
+            <Box className={`sticky top-24 p-6 rounded-lg ${
+              darkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-200'
+            } border animate-in slide-in-from-right duration-700`}>
+              <Text className="font-bold text-lg mb-4">Categories</Text>
+              <Stack gap="sm">
+                {categories.map((category, index) => (
+                  <Flex
+                    key={category}
+                    justify="space-between"
+                    align="center"
+                    className="cursor-pointer p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors animate-in slide-in-from-right duration-300"
+                    style={{ animationDelay: `${(index + 1) * 100}ms` }}
+                  >
+                    <Text className="text-sm">{category}</Text>
+                    <ChevronRight size={14} className="text-gray-400" />
+                  </Flex>
+                ))}
+              </Stack>
+
+              <Box className="mt-8">
+                <Text className="font-bold text-lg mb-4">Popular Articles</Text>
+                <Stack gap="sm">
+                  {sampleArticles.slice(0, 3).map((article, index) => (
+                    <Box
+                      key={article.id}
+                      className="cursor-pointer p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors animate-in slide-in-from-right duration-300"
+                      style={{ animationDelay: `${(index + 4) * 100}ms` }}
+                      onClick={() => handleArticleClick(article)}
+                    >
+                      <Text className="text-sm font-medium line-clamp-2 mb-1">
+                        {article.title}
+                      </Text>
+                      <Text className="text-xs text-gray-500 dark:text-gray-400">
+                        {formatDate(article.date)}
+                      </Text>
+                    </Box>
+                  ))}
+                </Stack>
+              </Box>
+            </Box>
+          </Box>
+        </Flex>
+      </Box>
+    </Box>
+  );
+}

@@ -9,6 +9,7 @@ import MoreStories from "./more-stories";
 import { getAllPosts } from "@/lib/api";
 import { CMS_NAME, CMS_URL } from "@/lib/constants";
 import { Markdown } from "@/lib/markdown";
+import Farmly from "./home";
 export const metadata = {
   title: `Farmly | Homepage`,
   description: `Your sustainable farming stop over`,
@@ -63,6 +64,7 @@ export default async function Page() {
  
   return (
     <div className="container mx-auto px-5">
+      <Farmly/>
       {heroPost && false && (
         <HeroPost
           title={heroPost.title}
