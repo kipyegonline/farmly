@@ -221,14 +221,14 @@ export default function Farmly() {
           </Flex>
 
           {/* Mobile Header */}
-          <Flex justify="space-between" align="center" className="h-16 md:hidden">
-            <Box className="animate-in slide-in-from-left duration-700">
-              <Flex align="center" gap="sm">
+          <Flex justify="space-between" align="center" className="h-16 hidden">
+            <Box className="animate-in slide-in-from-left duration-700 hidden">
+              <Flex align="center"  gap="sm">
                 <Box className="p-1.5 bg-emerald-100 dark:bg-emerald-900 rounded-lg">
                   <Leaf className="text-emerald-600" size={20} />
                 </Box>
                 <Text className="text-lg font-bold text-emerald-700 dark:text-emerald-400">
-                  Farmly
+                  Farmly000
                 </Text>
               </Flex>
             </Box>

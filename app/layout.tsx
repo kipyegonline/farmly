@@ -1,3 +1,4 @@
+"use client"
 import {
   MantineProvider,
   createTheme,
@@ -12,6 +13,8 @@ import "@mantine/core/styles.css";
 import "@mantine/nprogress/styles.css";
 import { EXAMPLE_PATH, CMS_NAME } from "@/lib/constants";
 import Footer from "@/components/ui/Footer";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 const primaryColours: MantineColorsTuple = [
   "#effbef",
   "#dcf4dc",
@@ -59,6 +62,28 @@ const theme = createTheme({
   },
 });
 
+// Create a client
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      // Time in milliseconds before data is considered stale
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      // Time in milliseconds to cache data
+      gcTime: 1000 * 60 * 10, // 10 minutes (previously called cacheTime)
+      // Retry failed requests
+      retry: 2,
+      // Refetch on window focus
+      refetchOnWindowFocus: false,
+      // Refetch on reconnect
+      refetchOnReconnect: true,
+    },
+    mutations: {
+      // Retry failed mutations
+      retry: 1,
+    },
+  },
+})
+
 export default function RootLayout({
   children,
 }: {
@@ -69,10 +94,17 @@ export default function RootLayout({
       <body>
         <section className="min-h-screen">
           <main>
-            <MantineProvider theme={theme}>
+            
+            <QueryClientProvider client={queryClient}>
+              <MantineProvider theme={theme}  >           
               <NavigationProgress />
               {children}
             </MantineProvider>
+            <ReactQueryDevtools initialIsOpen={false} />
+            </QueryClientProvider>
+             {/* Add React Query Devtools in development */}
+             
+      
           </main>
           <Footer />
         </section>
