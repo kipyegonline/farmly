@@ -3,6 +3,7 @@ import React from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { getAllPosts } from '@/lib/api'
 import { is } from 'date-fns/locale'
+import { Markdown } from '@/lib/markdown'
 
 export default function HomePageComponent() {
    
@@ -10,18 +11,13 @@ export default function HomePageComponent() {
         queryKey: ["posts", ],
       queryFn:async ()=>await getAllPosts(true) 
     })
-    console.log("data",data,isLoading,isError,error)
+   
   return (
     <div>
         {isLoading && <p>Loading...</p>}
         {isError && <p>Error: {error.message}</p>}  
-        {data && data.map((post:any) => (
-          <div key={post.slug}>
-            <h2>{post.title}</h2>
-            <p>{post.excerpt}</p>
-            <img src={post.coverImage.url} alt={post.title} />
-          </div>
-        ))}
+        { data && JSON.stringify(data[1], null, 2)}
+       
       
     </div>
   )

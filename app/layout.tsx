@@ -102,7 +102,7 @@ export default function RootLayout({
             </MantineProvider>
             <ReactQueryDevtools initialIsOpen={false} />
             </QueryClientProvider>
-             {/* Add React Query Devtools in development */}
+          
              
       
           </main>

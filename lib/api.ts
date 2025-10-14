@@ -47,21 +47,21 @@ body  {
     }
   }
     }`;
-const prev = process.env.CONTENTFUL_PREVIEW_ACCESS_TOKEN;
+const prev = process.env.NEXT_PUBLIC_CONTENTFUL_PREVIEW_ACCESS_TOKEN;
 const prod = process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKENN;
-const spaceId = process.env.CONTENTFUL_SPACE_ID;
+const spaceId = process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID;
 
 async function fetchGraphQL(query: string, preview = true): Promise<any> {
   return fetch(
-    `https://graphql.contentful.com/content/v1/spaces/${process.env.CONTENTFUL_SPACE_ID}`,
+    `https://graphql.contentful.com/content/v1/spaces/${spaceId}`,
     {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${
           preview
-            ? process.env.CONTENTFUL_PREVIEW_ACCESS_TOKEN
-            : process.env.CONTENTFUL_ACCESS_TOKEN
+            ? prev
+            : prod
         }`,
       },
       body: JSON.stringify({ query }),

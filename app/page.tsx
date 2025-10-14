@@ -63,7 +63,7 @@ export default async function Page() {
   const allPosts = await getAllPosts(isEnabled);
 
   const heroPost = allPosts?.[0];
-  const morePosts = allPosts?.slice();
+ 
 
   return (
     <div className="container mx-auto px-5">
@@ -79,21 +79,7 @@ export default async function Page() {
           excerpt={heroPost.excerpt}
         />
       )}
-      {morePosts.map((post, i) => (
-        <div key={i}>
-          <h1>
-            {i + 1}
-            {".) "}
-            {post.title}
-          </h1>
-          <section>
-            <hr />
-            {post.body && <Markdown content={post.body} />}
-          </section>
-        </div>
-      ))}
-
-      {/*morePosts && <MoreStories morePosts={morePosts} />*/}
+    
     </div>
   );
 }
