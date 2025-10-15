@@ -12,6 +12,7 @@ import { Markdown } from "@/lib/markdown";
 import Farmly from "./home";
 import { useQuery } from "@tanstack/react-query";
 import HomePageComponent from "@/components/Homepage";
+import { Divider } from "@mantine/core";
 export const metadata = {
   title: `Farmly | Homepage`,
   description: `Your sustainable farming stop over`,
@@ -59,17 +60,16 @@ function HeroPost({
 
 export default async function Page() {
   const { isEnabled } = draftMode();
- 
+
   const allPosts = await getAllPosts(isEnabled);
 
   const heroPost = allPosts?.[0];
- 
+  console.log("all posts", allPosts);
 
   return (
     <div className="container mx-auto px-5">
-      <HomePageComponent/>
-      <Farmly/>
-      {heroPost && false && (
+      {/**<HomePageComponent /> */}
+      {heroPost && (
         <HeroPost
           title={heroPost.title}
           coverImage={heroPost.coverImage}
@@ -79,7 +79,8 @@ export default async function Page() {
           excerpt={heroPost.excerpt}
         />
       )}
-    
+      <Divider />
+      <Farmly />
     </div>
   );
 }

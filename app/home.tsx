@@ -1,135 +1,168 @@
-"use client"
-import React, { useState, useEffect } from 'react';
-import { Box, Flex, Text, Card, Group, Stack, Burger, Drawer, Button } from '@mantine/core';
-import { Sun, Moon, Leaf, Clock, User, ChevronRight } from 'lucide-react';
-import Article from '@/components/Article/Article';
-
-interface Article {
-  id: string;
-  title: string;
-  coverImage: string;
-  date: string | Date;
-  author: string;
-  slug: string;
-  excerpt: string;
-  category: string;
-  readTime: string;
-}
+"use client";
+import React, { useState, useEffect } from "react";
+import {
+  Box,
+  Flex,
+  Text,
+  Card,
+  Group,
+  Stack,
+  Button,
+} from "@mantine/core";
+import { Sun, Moon, Clock, User, ChevronRight } from "lucide-react";
+import Article from "@/components/Article/Article";
+import Header from "@/components/Header";
+import MobileDrawer from "@/components/Header/MobileDrawer";
+import { Article as ArticleType } from "@/types/types";
+import { useQuery } from "@tanstack/react-query";
+import { getAllNewsPosts } from "@/lib/api";
+import { transformContentfulPosts } from "@/lib/utils";
 
 const sampleArticles: Article[] = [
   {
-    id: '1',
-    title: 'Regenerative Agriculture: The Future of Sustainable Farming',
-    coverImage: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&h=400&fit=crop',
-    date: '2024-05-20',
-    author: 'Sarah Mitchell',
-    slug: 'regenerative-agriculture-future',
-    excerpt: 'Discover how regenerative agriculture practices are revolutionizing farming by restoring soil health, increasing biodiversity, and creating more resilient food systems for the future.',
-    category: 'Sustainable Agriculture',
-    readTime: '5 min read'
+    id: "1",
+    title: "Regenerative Agriculture: The Future of Sustainable Farming",
+    coverImage:
+      "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&h=400&fit=crop",
+    date: "2024-05-20",
+    author: "Sarah Mitchell",
+    slug: "regenerative-agriculture-future",
+    excerpt:
+      "Discover how regenerative agriculture practices are revolutionizing farming by restoring soil health, increasing biodiversity, and creating more resilient food systems for the future.",
+    category: "Sustainable Agriculture",
+    readTime: "5 min read",
   },
   {
-    id: '2',
-    title: 'Organic Pest Control Methods That Actually Work',
-    coverImage: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800&h=400&fit=crop',
-    date: '2024-05-19',
-    author: 'James Rodriguez',
-    slug: 'organic-pest-control-methods',
-    excerpt: 'Learn about effective organic pest control strategies that protect your crops while maintaining ecological balance and soil health without harmful chemicals.',
-    category: 'Organic Farming',
-    readTime: '7 min read'
+    id: "2",
+    title: "Organic Pest Control Methods That Actually Work",
+    coverImage:
+      "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800&h=400&fit=crop",
+    date: "2024-05-19",
+    author: "James Rodriguez",
+    slug: "organic-pest-control-methods",
+    excerpt:
+      "Learn about effective organic pest control strategies that protect your crops while maintaining ecological balance and soil health without harmful chemicals.",
+    category: "Organic Farming",
+    readTime: "7 min read",
   },
   {
-    id: '3',
-    title: 'Building Healthy Soil: The Foundation of Agroecology',
-    coverImage: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=800&h=400&fit=crop',
-    date: '2024-05-18',
-    author: 'Maria Santos',
-    slug: 'building-healthy-soil-agroecology',
-    excerpt: 'Understanding soil health is crucial for sustainable farming. Explore the microorganisms, nutrients, and practices that create thriving agricultural ecosystems.',
-    category: 'Agroecology',
-    readTime: '6 min read'
+    id: "3",
+    title: "Building Healthy Soil: The Foundation of Agroecology",
+    coverImage:
+      "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=800&h=400&fit=crop",
+    date: "2024-05-18",
+    author: "Maria Santos",
+    slug: "building-healthy-soil-agroecology",
+    excerpt:
+      "Understanding soil health is crucial for sustainable farming. Explore the microorganisms, nutrients, and practices that create thriving agricultural ecosystems.",
+    category: "Agroecology",
+    readTime: "6 min read",
   },
   {
-    id: '4',
-    title: 'Water Conservation Techniques for Modern Farmers',
-    coverImage: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=800&h=400&fit=crop',
-    date: '2024-05-17',
-    author: 'David Chen',
-    slug: 'water-conservation-techniques',
-    excerpt: 'With water scarcity becoming a global concern, discover innovative irrigation methods and water management strategies that maximize efficiency while minimizing waste.',
-    category: 'Sustainable Agriculture',
-    readTime: '8 min read'
+    id: "4",
+    title: "Water Conservation Techniques for Modern Farmers",
+    coverImage:
+      "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=800&h=400&fit=crop",
+    date: "2024-05-17",
+    author: "David Chen",
+    slug: "water-conservation-techniques",
+    excerpt:
+      "With water scarcity becoming a global concern, discover innovative irrigation methods and water management strategies that maximize efficiency while minimizing waste.",
+    category: "Sustainable Agriculture",
+    readTime: "8 min read",
   },
   {
-    id: '5',
-    title: 'Companion Planting: Nature\'s Partnership in Agriculture',
-    coverImage: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800&h=400&fit=crop',
-    date: '2024-05-16',
-    author: 'Emily Johnson',
-    slug: 'companion-planting-guide',
-    excerpt: 'Harness the power of plant partnerships to naturally improve soil fertility, control pests, and increase crop yields through strategic companion planting.',
-    category: 'Organic Farming',
-    readTime: '4 min read'
-  }
+    id: "5",
+    title: "Companion Planting: Nature's Partnership in Agriculture",
+    coverImage:
+      "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800&h=400&fit=crop",
+    date: "2024-05-16",
+    author: "Emily Johnson",
+    slug: "companion-planting-guide",
+    excerpt:
+      "Harness the power of plant partnerships to naturally improve soil fertility, control pests, and increase crop yields through strategic companion planting.",
+    category: "Organic Farming",
+    readTime: "4 min read",
+  },
 ];
 
 const categories = [
-  'Sustainable Agriculture',
-  'Organic Farming',
-  'Agroecology',
-  'Soil Health',
-  'Water Management',
-  'Pest Control'
+  "Sustainable Agriculture",
+  "Organic Farming",
+  "Agroecology",
+  "Soil Health",
+  "Water Management",
+  "Pest Control",
 ];
 
 export default function Farmly() {
   const [darkMode, setDarkMode] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
+  const [selectedArticle, setSelectedArticle] = useState<ArticleType | null>(
+    null
+  );
+
+  // Fetch articles from Contentful
+  const { data: articles, isLoading } = useQuery({
+    queryKey: ["newsPosts"],
+    queryFn: async () => {
+      const posts = await getAllNewsPosts(false);
+      return transformContentfulPosts(posts);
+    },
+  });
+
+  // Use Contentful data or fallback to sample articles
+  const displayArticles =
+    articles && articles.length > 0 ? articles : sampleArticles;
 
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', darkMode);
+    document.documentElement.classList.toggle("dark", darkMode);
   }, [darkMode]);
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
   };
 
-  const handleArticleClick = (article: Article) => {
-  return ()=>  setSelectedArticle(article);
+  const handleArticleClick = (article: ArticleType) => {
+    return () => setSelectedArticle(article);
   };
 
   const formatDate = (date: string | Date) => {
-    return new Date(date).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+    return new Date(date).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
   if (selectedArticle) {
     return (
-      <Box className={`min-h-screen transition-colors duration-300 ${
-        darkMode ? 'dark bg-gray-900 text-white' : 'bg-white text-gray-900'
-      }`}>
-        {/* Header */}
-        <Box className={`sticky top-0 z-50 transition-colors duration-300 ${
-          darkMode ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'
-        } border-b backdrop-blur-md bg-opacity-95`}>
+      <Box
+        className={`min-h-screen transition-colors duration-300 ${
+          darkMode ? "dark bg-gray-900 text-white" : "bg-white text-gray-900"
+        }`}
+      >
+        {/* Header with Back Button */}
+        <Box
+          className={`sticky top-0 z-50 transition-colors duration-300 ${
+            darkMode
+              ? "bg-gray-900 border-gray-700"
+              : "bg-white border-gray-200"
+          } border-b backdrop-blur-md bg-opacity-95`}
+        >
           <Box className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <Flex justify="space-between" align="center" className="h-16">
               <Button
                 variant="subtle"
                 onClick={() => setSelectedArticle(null)}
-                className="text-emerald-600 hover:text-emerald-700"
+                className="text-emerald-600 hover:text-emerald-700 interactive-scale ripple-effect"
               >
                 ← Back to Home
               </Button>
               <Button
                 variant="subtle"
                 onClick={toggleDarkMode}
-                className="p-2"
+                className="p-2 interactive-scale ripple-effect rounded-full"
               >
                 {darkMode ? <Sun size={20} /> : <Moon size={20} />}
               </Button>
@@ -146,7 +179,11 @@ export default function Farmly() {
             <Text className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
               {selectedArticle.title}
             </Text>
-            <Flex align="center" gap="md" className="mb-8 text-gray-600 dark:text-gray-400">
+            <Flex
+              align="center"
+              gap="md"
+              className="mb-8 text-gray-600 dark:text-gray-400"
+            >
               <Flex align="center" gap="xs">
                 <User size={16} />
                 <Text size="sm">{selectedArticle.author}</Text>
@@ -171,13 +208,22 @@ export default function Farmly() {
                 {selectedArticle.excerpt}
               </Text>
               <Text className="leading-relaxed mb-4">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+                enim ad minim veniam, quis nostrud exercitation ullamco laboris
+                nisi ut aliquip ex ea commodo consequat.
               </Text>
               <Text className="leading-relaxed mb-4">
-                Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                Duis aute irure dolor in reprehenderit in voluptate velit esse
+                cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+                cupidatat non proident, sunt in culpa qui officia deserunt
+                mollit anim id est laborum.
               </Text>
               <Text className="leading-relaxed">
-                Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
+                Sed ut perspiciatis unde omnis iste natus error sit voluptatem
+                accusantium doloremque laudantium, totam rem aperiam, eaque ipsa
+                quae ab illo inventore veritatis et quasi architecto beatae
+                vitae dicta sunt explicabo.
               </Text>
             </Box>
           </Box>
@@ -187,93 +233,25 @@ export default function Farmly() {
   }
 
   return (
-    <Box className={`min-h-screen transition-colors duration-300 ${
-      darkMode ? 'dark bg-gray-900 text-white' : 'bg-white text-gray-900'
-    }`}>
-      {/* Header */}
-      <Box className={`sticky top-0 z-50 transition-colors duration-300 ${
-        darkMode ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'
-      } border-b backdrop-blur-md bg-opacity-95`}>
-        <Box className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Desktop Header */}
-          <Flex justify="space-between" align="center" className="h-20 hidden md:flex">
-            <Box className="animate-in slide-in-from-left duration-700">
-              <Flex align="center" gap="md">
-                <Box className="p-2 bg-emerald-100 dark:bg-emerald-900 rounded-lg">
-                  <Leaf className="text-emerald-600" size={28} />
-                </Box>
-                <Box>
-                  <Text className="text-2xl font-bold text-emerald-700 dark:text-emerald-400">
-                    Farmly
-                  </Text>
-                  <Text className="text-sm text-gray-600 dark:text-gray-400">
-                    Sustainable Agriculture News
-                  </Text>
-                </Box>
-              </Flex>
-            </Box>
-            <Button
-              variant="subtle"
-              onClick={toggleDarkMode}
-              className="p-2 animate-in slide-in-from-right duration-700"
-            >
-              {darkMode ? <Sun size={20} /> : <Moon size={20} />}
-            </Button>
-          </Flex>
-
-          {/* Mobile Header */}
-          <Flex justify="space-between" align="center" className="h-16 hidden">
-            <Box className="animate-in slide-in-from-left duration-700 hidden">
-              <Flex align="center"  gap="sm">
-                <Box className="p-1.5 bg-emerald-100 dark:bg-emerald-900 rounded-lg">
-                  <Leaf className="text-emerald-600" size={20} />
-                </Box>
-                <Text className="text-lg font-bold text-emerald-700 dark:text-emerald-400">
-                  Farmly000
-                </Text>
-              </Flex>
-            </Box>
-            <Flex align="center" gap="sm">
-              <Button
-                variant="subtle"
-                onClick={toggleDarkMode}
-                className="p-2"
-              >
-                {darkMode ? <Sun size={18} /> : <Moon size={18} />}
-              </Button>
-              <Burger
-                opened={mobileMenuOpen}
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="md:hidden"
-              />
-            </Flex>
-          </Flex>
-        </Box>
-      </Box>
+    <Box
+      className={`min-h-screen transition-colors duration-300 ${
+        darkMode ? "dark bg-gray-900 text-white" : "bg-white text-gray-900"
+      }`}
+    >
+      {/* Modular Header Component */}
+      <Header
+        darkMode={darkMode}
+        toggleDarkMode={toggleDarkMode}
+        mobileMenuOpen={mobileMenuOpen}
+        setMobileMenuOpen={setMobileMenuOpen}
+      />
 
       {/* Mobile Menu Drawer */}
-      <Drawer
-        opened={mobileMenuOpen}
-        onClose={() => setMobileMenuOpen(false)}
-        position="right"
-        size="sm"
-        className="md:hidden"
-      >
-        <Stack gap="lg" className="p-4">
-          <Text className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 font-semibold">
-            Categories
-          </Text>
-          {categories.map((category, index) => (
-            <Text
-              key={category}
-              className="cursor-pointer hover:text-emerald-600 transition-colors animate-in slide-in-from-right duration-300"
-              style={{ animationDelay: `${index * 100}ms` }}
-            >
-              {category}
-            </Text>
-          ))}
-        </Stack>
-      </Drawer>
+      <MobileDrawer
+        mobileMenuOpen={mobileMenuOpen}
+        setMobileMenuOpen={setMobileMenuOpen}
+        categories={categories}
+      />
 
       {/* Main Content */}
       <Box className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -283,19 +261,35 @@ export default function Farmly() {
             <Text className="text-3xl md:text-4xl font-bold mb-8 animate-in slide-in-from-bottom duration-700">
               Latest in Sustainable Agriculture
             </Text>
-            
+
             <Stack gap="xl">
-              {sampleArticles.map((article, index) => (
-                <Article key={article.id} article={article} index={index} handleArticleClick={()=>handleArticleClick(article)} darkMode={darkMode}/>
-              ))}
+              {isLoading ? (
+                <Text className="text-center text-gray-500">
+                  Loading articles...
+                </Text>
+              ) : (
+                displayArticles.map((article, index) => (
+                  <Article
+                    key={article.id}
+                    article={article}
+                    index={index}
+                    handleArticleClick={handleArticleClick(article)}
+                    darkMode={darkMode}
+                  />
+                ))
+              )}
             </Stack>
           </Box>
 
           {/* Sidebar - Hidden on mobile */}
           <Box className="w-80 hidden lg:block">
-            <Box className={`sticky top-24 p-6 rounded-lg ${
-              darkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-200'
-            } border animate-in slide-in-from-right duration-700`}>
+            <Box
+              className={`sticky top-24 p-6 rounded-lg ${
+                darkMode
+                  ? "bg-gray-800 border-gray-700"
+                  : "bg-gray-50 border-gray-200"
+              } border animate-in slide-in-from-right duration-700`}
+            >
               <Text className="font-bold text-lg mb-4">Categories</Text>
               <Stack gap="sm">
                 {categories.map((category, index) => (
@@ -315,12 +309,12 @@ export default function Farmly() {
               <Box className="mt-8">
                 <Text className="font-bold text-lg mb-4">Popular Articles</Text>
                 <Stack gap="sm">
-                  {sampleArticles.slice(0, 3).map((article, index) => (
+                  {displayArticles.slice(0, 3).map((article, index) => (
                     <Box
                       key={article.id}
                       className="cursor-pointer p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors animate-in slide-in-from-right duration-300"
                       style={{ animationDelay: `${(index + 4) * 100}ms` }}
-                      onClick={() => handleArticleClick(article)}
+                      onClick={handleArticleClick(article)}
                     >
                       <Text className="text-sm font-medium line-clamp-2 mb-1">
                         {article.title}
