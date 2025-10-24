@@ -27,6 +27,7 @@ import {
   BookOpen,
 } from "lucide-react";
 import { notFound } from "next/navigation";
+import { Markdown } from "@/lib/markdown";
 
 interface Article {
   id: string;
@@ -247,6 +248,7 @@ export default function ArticlePage() {
         <Box className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Flex justify="space-between" align="center" className="h-16">
             <Button
+              onClick={() => (location.pathname = "/")}
               variant="subtle"
               leftSection={<ArrowLeft size={18} />}
               className="text-emerald-600 hover:text-emerald-700 font-medium interactive-scale ripple-effect transition-all duration-300 hover:translate-x-[-4px]"
@@ -258,7 +260,11 @@ export default function ArticlePage() {
               onClick={toggleDarkMode}
               className="p-2 interactive-scale ripple-effect rounded-full hover:bg-emerald-50 dark:hover:bg-gray-800 transition-all duration-300"
             >
-              {darkMode ? <Sun size={20} className="animate-rotateIn" /> : <Moon size={20} className="animate-rotateIn" />}
+              {darkMode ? (
+                <Sun size={20} className="animate-rotateIn" />
+              ) : (
+                <Moon size={20} className="animate-rotateIn" />
+              )}
             </Button>
           </Flex>
         </Box>
@@ -271,7 +277,9 @@ export default function ArticlePage() {
           className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-100"
           style={{
             backgroundImage: `url(${currentArticle.coverImage})`,
-            transform: `translateY(${scrollY * 0.5}px) scale(${1 + scrollY * 0.0002})`,
+            transform: `translateY(${scrollY * 0.5}px) scale(${
+              1 + scrollY * 0.0002
+            })`,
           }}
         >
           <Box className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70" />
@@ -292,7 +300,12 @@ export default function ArticlePage() {
           </Text>
 
           {/* Author Info */}
-          <Flex justify="center" align="center" gap="md" className="mb-12 animate-fadeInUp stagger-4">
+          <Flex
+            justify="center"
+            align="center"
+            gap="md"
+            className="mb-12 animate-fadeInUp stagger-4"
+          >
             <Avatar
               src={currentArticle.authorAvatar}
               alt={currentArticle.author}
@@ -366,7 +379,7 @@ export default function ArticlePage() {
                   `}
                   dangerouslySetInnerHTML={{ __html: currentArticle.content }}
                 />
-
+                <Markdown content={currentArticle.content} />
                 {/* Engagement Stats */}
                 <Flex
                   justify="space-between"
@@ -379,7 +392,11 @@ export default function ArticlePage() {
                       leftSection={
                         <Heart
                           size={18}
-                          className={`transition-all duration-300 ${liked ? "fill-red-500 text-red-500 animate-pulse" : ""}`}
+                          className={`transition-all duration-300 ${
+                            liked
+                              ? "fill-red-500 text-red-500 animate-pulse"
+                              : ""
+                          }`}
                         />
                       }
                       onClick={() => setLiked(!liked)}
@@ -511,7 +528,9 @@ export default function ArticlePage() {
 
           {/* Mobile Recommended Articles - Show at bottom on mobile */}
           <Box className="lg:hidden mt-16">
-            <Text className="text-2xl font-bold mb-6 text-gradient-animated">You might also like</Text>
+            <Text className="text-2xl font-bold mb-6 text-gradient-animated">
+              You might also like
+            </Text>
             <Box className="grid gap-6">
               {recommendedArticles.map((article, index) => (
                 <Card

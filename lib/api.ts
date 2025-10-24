@@ -1,3 +1,9 @@
+/** author {
+    name
+    picture {
+      url
+    }
+  } */
 const POST_GRAPHQL_FIELDS = `
   slug
   title
@@ -5,14 +11,9 @@ const POST_GRAPHQL_FIELDS = `
     url
   }
   date
-  author {
-    name
-    picture {
-      url
-    }
-  }
+  author
   excerpt
-  content {
+  body {
     json
     links {
       assets {
@@ -99,14 +100,15 @@ function extractPost(fetchResponse: any): any {
 }
 
 function extractPostEntries(fetchResponse: any): any[] {
+  console.log(fetchResponse, "______fetchResponse");
   if (fetchResponse) {
     const {
       data: {
-        payload: { books },
+        payload: { posts },
       },
     } = fetchResponse;
 
-    return books; // fetchResponse?.payload.books;
+    return posts; // fetchResponse?.payload.books;
   } else {
     return [];
   }
@@ -131,7 +133,7 @@ export async function getAllPosts(isDraftMode: boolean): Promise<any[]> {
     const entries = await fetchGraphQL(
       `query {
   
-      bookReaderCollection(where: { slug_exists: true }, order: date_DESC, preview: ${
+      bookReaderCollection(where: { slug_exists: true }, order: date_DESC,limit:10, preview: ${
         isDraftMode ? "true" : "false"
       }) {
         items {
@@ -163,7 +165,7 @@ export async function getAllNewsPosts(
     }`,
     isDraftMode
   );
-  console.log("entries", entries);
+  console.log("entries:", entries);
   return entries?.data?.news?.posts || [];
 }
 
@@ -193,7 +195,7 @@ export async function getPostAndMorePosts(
 ): Promise<any> {
   const entry = await fetchGraphQL(
     `query {
-      postCollection(where: { slug: "${slug}" }, preview: ${
+      post:bookReaderCollection(where: { slug: "${slug}" }, preview: ${
       preview ? "true" : "false"
     }, limit: 1) {
         items {
@@ -205,7 +207,7 @@ export async function getPostAndMorePosts(
   );
   const entries = await fetchGraphQL(
     `query {
-      postCollection(where: { slug_not_in: "${slug}" }, order: date_DESC, preview: ${
+     posts: bookReaderCollection(where: { slug_not_in: "${slug}" }, order: date_DESC, preview: ${
       preview ? "true" : "false"
     }, limit: 2) {
         items {
@@ -215,8 +217,9 @@ export async function getPostAndMorePosts(
     }`,
     preview
   );
+
   return {
-    post: extractPost(entry),
-    morePosts: extractPostEntries(entries),
+    post: entry?.data?.post?.item || [], //extractPost(entry),
+    morePosts: entries?.data?.posts?.items, //extractPostEntries(entries),
   };
 }

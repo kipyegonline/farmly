@@ -9,6 +9,7 @@ import { Article as ArticleType } from "@/types/types";
 import { useQuery } from "@tanstack/react-query";
 import { getAllNewsPosts } from "@/lib/api";
 import { transformContentfulPosts } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 const categories = [
   "Sustainable Agriculture",
@@ -25,12 +26,13 @@ export default function Farmly() {
   const [selectedArticle, setSelectedArticle] = useState<ArticleType | null>(
     null
   );
-
+  const router = useRouter();
   // Fetch articles from Contentful
   const { data: articles, isLoading } = useQuery({
     queryKey: ["newsPosts"],
     queryFn: async () => {
       const posts = await getAllNewsPosts(false);
+      console.log(posts, "cette posts");
       return transformContentfulPosts(posts);
     },
   });
@@ -47,7 +49,12 @@ export default function Farmly() {
   };
 
   const handleArticleClick = (article: ArticleType) => {
-    return () => setSelectedArticle(article);
+    return () => {
+      console.log(article, `pushing....`);
+      router.push(`/posts/${article.slug}`);
+      //router.push(`/${article.slug}`);
+      //setSelectedArticle(article);
+    };
   };
 
   const formatDate = (date: string | Date) => {
