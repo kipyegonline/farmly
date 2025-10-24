@@ -142,7 +142,7 @@ const recommendedArticles: Article[] = [
   },
 ];
 
-export default function ArticlePage() {
+export default function ArticlePage({ post, morePosts }) {
   const [darkMode, setDarkMode] = useState(false);
   const [showScrollAnimation, setShowScrollAnimation] = useState(true);
   const [liked, setLiked] = useState(false);
@@ -221,7 +221,7 @@ export default function ArticlePage() {
       }
     }
   };
-
+  console.log({ post, morePosts }, "post and more posts");
   return (
     <Box
       className={`min-h-screen transition-colors duration-500 ${
@@ -276,7 +276,7 @@ export default function ArticlePage() {
         <Box
           className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-100"
           style={{
-            backgroundImage: `url(${currentArticle.coverImage})`,
+            backgroundImage: `url(${post.coverImage.url})`,
             transform: `translateY(${scrollY * 0.5}px) scale(${
               1 + scrollY * 0.0002
             })`,
@@ -288,15 +288,15 @@ export default function ArticlePage() {
         {/* Hero Content */}
         <Box className="relative z-10 text-center text-white max-w-4xl mx-auto px-4">
           <Text className="text-emerald-400 font-semibold mb-4 text-lg tracking-wide uppercase animate-fadeInUp stagger-1">
-            {currentArticle.category}
+            {post.category}
           </Text>
 
           <Text className="text-4xl md:text-6xl font-bold mb-6 leading-tight animate-fadeInUp stagger-2">
-            {currentArticle.title}
+            {post.title}
           </Text>
 
           <Text className="text-xl md:text-2xl mb-8 text-gray-200 leading-relaxed max-w-3xl mx-auto animate-fadeInUp stagger-3">
-            {currentArticle.excerpt}
+            {post.excerpt}
           </Text>
 
           {/* Author Info */}
@@ -307,22 +307,25 @@ export default function ArticlePage() {
             className="mb-12 animate-fadeInUp stagger-4"
           >
             <Avatar
-              src={currentArticle.authorAvatar}
-              alt={currentArticle.author}
+              src={post.author}
+              display="none"
+              alt={post.author}
               size="lg"
               className="border-2 border-white/20 animate-scaleIn stagger-4 transition-transform duration-300 hover:scale-110 hover:border-emerald-400"
             />
             <Box className="text-left">
               <Text className="font-semibold text-lg transition-colors duration-300 hover:text-emerald-400">
-                {currentArticle.author}
+                {post.author}
               </Text>
-              <Flex align="center" gap="sm" className="text-gray-300">
-                <Calendar size={16} className="text-emerald-400" />
-                <Text>{formatDate(currentArticle.date)}</Text>
-                <Text>•</Text>
-                <Clock size={16} className="text-emerald-400" />
-                <Text>{currentArticle.readTime}</Text>
-              </Flex>
+              {post?.date && (
+                <Flex align="center" gap="sm" className="text-gray-300">
+                  <Calendar size={16} className="text-emerald-400" />
+                  <Text>{formatDate(post.date)}</Text>
+                  <Text>•</Text>
+                  <Clock size={16} className="text-emerald-400" />
+                  <Text>{post.readTime}</Text>
+                </Flex>
+              )}
             </Box>
           </Flex>
         </Box>
@@ -368,7 +371,7 @@ export default function ArticlePage() {
 
                 {/* Article Body */}
                 <Box
-                  className={`prose prose-lg max-w-none leading-relaxed ${
+                  className={`prose hidden prose-lg max-w-none leading-relaxed ${
                     darkMode ? "prose-invert" : ""
                   } 
                   prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-white
@@ -379,7 +382,7 @@ export default function ArticlePage() {
                   `}
                   dangerouslySetInnerHTML={{ __html: currentArticle.content }}
                 />
-                <Markdown content={currentArticle.content} />
+                <Markdown content={post.body} />
                 {/* Engagement Stats */}
                 <Flex
                   justify="space-between"
@@ -418,7 +421,7 @@ export default function ArticlePage() {
                       leftSection={<BookOpen size={18} />}
                       className="text-gray-500 interactive-scale ripple-effect transition-all duration-300 hover:text-emerald-500"
                     >
-                      {currentArticle.readTime}
+                      {post.readTime}
                     </Button>
                   </Flex>
                 </Flex>
@@ -475,7 +478,7 @@ export default function ArticlePage() {
             </Box>
 
             {/* Recommended Articles Sidebar - 20% width, hidden on mobile */}
-            <Box className="hidden lg:block w-1/5">
+            <Box className="hidden lg:block w-2/5">
               <Box className="sticky top-24">
                 <Card
                   className={`p-6 card-shine ${
@@ -488,7 +491,7 @@ export default function ArticlePage() {
                     Recommended Reading
                   </Text>
                   <Stack gap="md">
-                    {recommendedArticles.map((article, index) => (
+                    {morePosts.map((article: Article, index: number) => (
                       <Box
                         key={article.id}
                         className={`group cursor-pointer p-3 rounded-lg transition-all duration-300 hover:shadow-lg animate-fadeInUp card-shine ${
@@ -498,7 +501,7 @@ export default function ArticlePage() {
                       >
                         <Box className="relative overflow-hidden rounded-md mb-3 shadow-md">
                           <img
-                            src={article.coverImage}
+                            src={article.coverImage?.url}
                             alt={article.title}
                             className="w-full h-20 object-cover transition-all duration-500 group-hover:scale-110 group-hover:brightness-110 group-hover:rotate-1"
                           />
@@ -532,7 +535,7 @@ export default function ArticlePage() {
               You might also like
             </Text>
             <Box className="grid gap-6">
-              {recommendedArticles.map((article, index) => (
+              {morePosts.map((article: Article, index: number) => (
                 <Card
                   key={article.id}
                   className={`group cursor-pointer transition-all duration-500 hover:shadow-xl border card-shine rounded-2xl ${
@@ -545,7 +548,7 @@ export default function ArticlePage() {
                   <Flex gap="md">
                     <Box className="w-24 h-24 flex-shrink-0">
                       <img
-                        src={article.coverImage}
+                        src={article.coverImage?.url}
                         alt={article.title}
                         className="w-full h-full object-cover rounded-lg transition-all duration-500 group-hover:scale-110 group-hover:rotate-2 shadow-md"
                       />

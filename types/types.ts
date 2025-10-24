@@ -1,7 +1,7 @@
 export interface Article {
   id: string;
   title: string;
-  coverImage: string;
+  coverImage: { url: string };
   date: string | Date;
   author: string;
   slug: string;
@@ -12,6 +12,7 @@ export interface Article {
     json: any;
     links?: any;
   };
+  tags?: string[];
 }
 
 export interface ContentfulNewsPost {

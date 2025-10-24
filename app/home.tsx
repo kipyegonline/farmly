@@ -32,7 +32,7 @@ export default function Farmly() {
     queryKey: ["newsPosts"],
     queryFn: async () => {
       const posts = await getAllNewsPosts(false);
-      console.log(posts, "cette posts");
+
       return transformContentfulPosts(posts);
     },
   });
@@ -50,9 +50,8 @@ export default function Farmly() {
 
   const handleArticleClick = (article: ArticleType) => {
     return () => {
-      console.log(article, `pushing....`);
-      router.push(`/posts/${article.slug}`);
-      //router.push(`/${article.slug}`);
+      //router.push(`/posts/${article.slug}`);
+      router.push(`/${article.slug}`);
       //setSelectedArticle(article);
     };
   };

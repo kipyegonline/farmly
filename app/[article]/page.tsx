@@ -9,10 +9,10 @@ export default async function ArticlePage({
   params: { slug: string };
 }) {
   const { post, morePosts } = await getPostAndMorePosts(params.slug, false);
-  console.log({ post, morePosts }, "post and more posts");
+
   return (
-    <Container>
-      <ArticlePageClient />
+    <Container size={"lg"}>
+      <ArticlePageClient post={morePosts[0]} morePosts={morePosts} />
     </Container>
   );
 }
