@@ -1,17 +1,19 @@
-'use client';
-import React from 'react';
-import { Drawer, Stack, Text } from '@mantine/core';
+"use client";
+import React from "react";
+import { Drawer, Stack, Text } from "@mantine/core";
 
 type MobileDrawerProps = {
   mobileMenuOpen: boolean;
   setMobileMenuOpen: (open: boolean) => void;
   categories: string[];
+  darkMode: boolean;
 };
 
 export default function MobileDrawer({
   mobileMenuOpen,
   setMobileMenuOpen,
   categories,
+  darkMode,
 }: MobileDrawerProps) {
   return (
     <Drawer
@@ -19,15 +21,28 @@ export default function MobileDrawer({
       onClose={() => setMobileMenuOpen(false)}
       position="right"
       size="sm"
-      className="md:hidden"
+      className={`md:hidden ${
+        darkMode ? " bg-gray-900 text-white" : "bg-white text-gray-900"
+      } `}
       title={
-        <Text className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
-          Navigation
+        <Text
+          className={`text-lg font-bold text-emerald-600 dark:text-emerald-400 ${
+            darkMode ? " bg-gray-900 text-white" : "bg-white text-gray-900"
+          }`}
+        >
+          Farmly
         </Text>
       }
     >
-      <Stack gap="lg" className="p-4">
-        <Text className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 font-semibold">
+      <Stack
+        gap="lg"
+        className={`p-4 ${
+          darkMode ? " bg-gray-900 text-white" : "bg-white text-gray-900"
+        }`}
+      >
+        <Text
+          className={`text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 font-semibold`}
+        >
           Categories
         </Text>
         {categories.map((category, index) => (

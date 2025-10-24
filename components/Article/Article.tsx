@@ -1,48 +1,53 @@
-'use client'
-import React, { useState, useEffect, useRef } from 'react'
-import { Card, Flex, Box, Text, Stack, Badge } from '@mantine/core'
-import { User, Clock, ArrowRight, Sparkles } from 'lucide-react'
-import { formatDate } from '@/lib/utils'
+"use client";
+import React, { useState, useEffect, useRef } from "react";
+import { Card, Flex, Box, Text, Stack, Badge } from "@mantine/core";
+import { User, Clock, ArrowRight, Sparkles } from "lucide-react";
+import { formatDate } from "@/lib/utils";
 
 type ArticleProps = {
-  article: any
-  index: number
-  darkMode: boolean
-  handleArticleClick: (article: any) => () => void
-}
+  article: any;
+  index: number;
+  darkMode: boolean;
+  handleArticleClick: (article: any) => () => void;
+};
 
-export default function Article({ article, index, darkMode, handleArticleClick }: ArticleProps) {
-  const [isVisible, setIsVisible] = useState(false)
-  const [isHovered, setIsHovered] = useState(false)
-  const cardRef = useRef<HTMLDivElement>(null)
+export default function Article({
+  article,
+  index,
+  darkMode,
+  handleArticleClick,
+}: ArticleProps) {
+  const [isVisible, setIsVisible] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setIsVisible(true)
-          observer.disconnect()
+          setIsVisible(true);
+          observer.disconnect();
         }
       },
       { threshold: 0.1 }
-    )
+    );
 
     if (cardRef.current) {
-      observer.observe(cardRef.current)
+      observer.observe(cardRef.current);
     }
 
-    return () => observer.disconnect()
-  }, [])
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <Card
       ref={cardRef}
       className={`group cursor-pointer relative overflow-hidden border ${
-        darkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'
-      } ${isVisible ? 'animate-fadeInUp' : 'opacity-0'} hover-lift rounded-2xl`}
+        darkMode ? "border-gray-700 bg-gray-800" : "border-gray-200 bg-white"
+      } ${isVisible ? "animate-fadeInUp" : "opacity-0"} hover-lift rounded-2xl`}
       style={{
         animationDelay: `${index * 100}ms`,
-        transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+        transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
       }}
       onClick={handleArticleClick}
       onMouseEnter={() => setIsHovered(true)}
@@ -52,7 +57,7 @@ export default function Article({ article, index, darkMode, handleArticleClick }
       <Box
         className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-500 pointer-events-none"
         style={{
-          background: 'linear-gradient(135deg, #10b981, #059669)',
+          background: "linear-gradient(135deg, #10b981, #059669)",
         }}
       />
 
@@ -65,20 +70,18 @@ export default function Article({ article, index, darkMode, handleArticleClick }
               alt={article.title}
               className="w-full h-56 md:h-48 object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-110"
               style={{
-                transform: isHovered ? 'scale(1.1) rotate(1deg)' : 'scale(1)',
+                transform: isHovered ? "scale(1.1) rotate(1deg)" : "scale(1)",
               }}
             />
             {/* Dark overlay */}
-            <Box
-              className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-            />
+            <Box className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
             {/* Category badge */}
             <Box className="absolute top-3 left-3 z-10">
               <Badge
                 className="bg-emerald-600 text-white px-3 py-2 text-xs font-semibold shadow-lg backdrop-blur-sm transition-all duration-300 group-hover:scale-110"
                 style={{
-                  background: 'linear-gradient(135deg, #10b981, #059669)',
+                  background: "linear-gradient(135deg, #10b981, #059669)",
                 }}
               >
                 <Flex align="center" gap={4}>
@@ -89,9 +92,7 @@ export default function Article({ article, index, darkMode, handleArticleClick }
             </Box>
 
             {/* Read more indicator */}
-            <Box
-              className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-x-2 group-hover:translate-x-0"
-            >
+            <Box className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-x-2 group-hover:translate-x-0">
               <Box className="bg-white dark:bg-gray-800 rounded-full p-2 shadow-xl">
                 <ArrowRight size={18} className="text-emerald-600" />
               </Box>
@@ -105,12 +106,12 @@ export default function Article({ article, index, darkMode, handleArticleClick }
             <Text
               className={`text-xl md:text-2xl font-bold line-clamp-2 transition-all duration-300 ${
                 darkMode
-                  ? 'text-white group-hover:text-emerald-400'
-                  : 'text-gray-900 group-hover:text-emerald-600'
+                  ? "text-white group-hover:text-emerald-400"
+                  : "text-gray-900 group-hover:text-emerald-600"
               }`}
               style={{
-                transform: isHovered ? 'translateX(8px)' : 'translateX(0)',
-                transition: 'transform 0.3s ease',
+                transform: isHovered ? "translateX(8px)" : "translateX(0)",
+                transition: "transform 0.3s ease",
               }}
             >
               {article.title}
@@ -118,7 +119,7 @@ export default function Article({ article, index, darkMode, handleArticleClick }
 
             <Text
               className={`line-clamp-3 leading-relaxed transition-all duration-300 ${
-                darkMode ? 'text-gray-400' : 'text-gray-600'
+                darkMode ? "text-gray-400" : "text-gray-600"
               }`}
             >
               {article.excerpt}
@@ -130,28 +131,38 @@ export default function Article({ article, index, darkMode, handleArticleClick }
             align="center"
             gap="md"
             className={`text-sm mt-4 transition-opacity duration-300 ${
-              darkMode ? 'text-gray-500' : 'text-gray-500'
+              darkMode ? "text-gray-500" : "text-gray-500"
             }`}
           >
-            <Flex align="center" gap="xs" className="transition-transform duration-300 hover:scale-105">
+            <Flex
+              align="center"
+              gap="xs"
+              className="transition-transform duration-300 hover:scale-105"
+            >
               <User size={14} className="text-emerald-600" />
               <Text className="font-medium">{article.author}</Text>
             </Flex>
             <Text>•</Text>
-            <Flex align="center" gap="xs" className="transition-transform duration-300 hover:scale-105">
-              <Clock size={14} className="text-emerald-600" />
-              <Text>{formatDate(article.date)}</Text>
-            </Flex>
+            {article?.date ? (
+              <Flex
+                align="center"
+                gap="xs"
+                className="transition-transform duration-300 hover:scale-105"
+              >
+                <Clock size={14} className="text-emerald-600" />
+                <Text>{formatDate(article.date)}</Text>
+              </Flex>
+            ) : null}
             <Text>•</Text>
-            <Text className="font-medium text-emerald-600">{article.readTime}</Text>
+            <Text className="font-medium text-emerald-600">
+              {article.readTime}
+            </Text>
           </Flex>
         </Box>
       </Flex>
 
       {/* Bottom shine effect */}
-      <Box
-        className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"
-      />
+      <Box className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
     </Card>
-  )
+  );
 }

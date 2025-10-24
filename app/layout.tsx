@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import {
   MantineProvider,
   createTheme,
@@ -7,10 +7,10 @@ import {
 import { generateColors, generateColorsMap } from "@mantine/colors-generator";
 import { Inter, Poppins } from "next/font/google";
 import { NavigationProgress } from "@mantine/nprogress";
-import "./globals.css";
 // core styles are required for all packages
 import "@mantine/core/styles.css";
 import "@mantine/nprogress/styles.css";
+import "./globals.css";
 import { EXAMPLE_PATH, CMS_NAME } from "@/lib/constants";
 import Footer from "@/components/ui/Footer";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -82,7 +82,7 @@ const queryClient = new QueryClient({
       retry: 1,
     },
   },
-})
+});
 
 export default function RootLayout({
   children,
@@ -92,19 +92,15 @@ export default function RootLayout({
   return (
     <html lang="en" className={poppins.variable}>
       <body>
-        <section className="min-h-screen">
+        <section className="min-h-screen ">
           <main>
-            
             <QueryClientProvider client={queryClient}>
-              <MantineProvider theme={theme}  >           
-              <NavigationProgress />
-              {children}
-            </MantineProvider>
-            <ReactQueryDevtools initialIsOpen={false} />
+              <MantineProvider theme={theme}>
+                <NavigationProgress />
+                {children}
+              </MantineProvider>
+              <ReactQueryDevtools initialIsOpen={false} />
             </QueryClientProvider>
-          
-             
-      
           </main>
           <Footer />
         </section>

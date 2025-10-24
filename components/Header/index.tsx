@@ -1,8 +1,8 @@
-'use client';
-import React, { useState, useEffect } from 'react';
-import { Box } from '@mantine/core';
-import DesktopHeader from './DesktopHeader';
-import MobileHeader from './MobileHeader';
+"use client";
+import React, { useState, useEffect } from "react";
+import { Box } from "@mantine/core";
+import DesktopHeader from "./DesktopHeader";
+import MobileHeader from "./MobileHeader";
 
 type HeaderProps = {
   darkMode: boolean;
@@ -23,8 +23,8 @@ export default function Header({
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
@@ -32,14 +32,14 @@ export default function Header({
       className={`sticky top-0 z-50 transition-all duration-500 ${
         scrolled
           ? darkMode
-            ? 'bg-gray-900/95 border-gray-700 shadow-xl'
-            : 'bg-white/95 border-gray-200 shadow-xl'
+            ? "bg-gray-900/95 border-gray-700 shadow-xl"
+            : "bg-white/95 border-gray-200 shadow-xl"
           : darkMode
-          ? 'bg-gray-900/80 border-gray-700/50'
-          : 'bg-white/80 border-gray-200/50'
+          ? "bg-gray-900/80 border-gray-700/50"
+          : "bg-white/80 border-gray-200/50"
       } border-b backdrop-blur-xl`}
     >
-      <Box className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Box className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
         {/* Desktop Header */}
         <DesktopHeader darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
 
@@ -54,4 +54,3 @@ export default function Header({
     </Box>
   );
 }
-

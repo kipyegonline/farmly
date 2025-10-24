@@ -67,7 +67,7 @@ export default async function Page() {
   console.log("all posts", allPosts);
 
   return (
-    <div className="container mx-auto px-5">
+    <div className="container mx-auto px-0  ">
       {/**<HomePageComponent /> */}
       {heroPost && (
         <HeroPost

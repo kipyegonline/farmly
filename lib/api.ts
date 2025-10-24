@@ -127,8 +127,9 @@ export async function getPreviewPostBySlug(slug: string | null): Promise<any> {
 }
 
 export async function getAllPosts(isDraftMode: boolean): Promise<any[]> {
-  const entries = await fetchGraphQL(
-    `query {
+  try {
+    const entries = await fetchGraphQL(
+      `query {
   
       bookReaderCollection(where: { slug_exists: true }, order: date_DESC, preview: ${
         isDraftMode ? "true" : "false"
@@ -138,10 +139,13 @@ export async function getAllPosts(isDraftMode: boolean): Promise<any[]> {
         }
       }
     }`,
-    isDraftMode
-  );
+      isDraftMode
+    );
 
-  return extractPost(entries);
+    return extractPost(entries);
+  } catch (error) {
+    return [];
+  }
 }
 
 export async function getAllNewsPosts(

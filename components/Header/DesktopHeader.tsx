@@ -1,8 +1,8 @@
-'use client';
-import React from 'react';
-import { Flex, Box, Text, Button } from '@mantine/core';
-import { Leaf, Sun, Moon } from 'lucide-react';
-import Link from 'next/link';
+"use client";
+import React from "react";
+import { Flex, Box, Text, Button } from "@mantine/core";
+import { Leaf, Sun, Moon } from "lucide-react";
+import Link from "next/link";
 
 type DesktopHeaderProps = {
   darkMode: boolean;
@@ -14,14 +14,18 @@ export default function DesktopHeader({
   toggleDarkMode,
 }: DesktopHeaderProps) {
   return (
-    <Flex justify="space-between" align="center" className="h-20 hidden md:flex">
+    <Flex
+      justify="space-between"
+      align="center"
+      className="h-20  hidden md:flex"
+    >
       <Link href="/" className="group">
         <Flex align="center" gap="md" className="cursor-pointer">
           <Box
             className={`p-2 rounded-xl transition-all duration-300 group-hover:scale-110 group-hover:rotate-12 ${
               darkMode
-                ? 'bg-gradient-to-br from-emerald-900 to-emerald-800'
-                : 'bg-gradient-to-br from-emerald-100 to-emerald-200'
+                ? "bg-gradient-to-br from-emerald-900 to-emerald-800"
+                : "bg-gradient-to-br from-emerald-100 to-emerald-200"
             }`}
           >
             <Leaf className="text-emerald-600 animate-float" size={28} />
@@ -29,7 +33,7 @@ export default function DesktopHeader({
           <Box>
             <Text
               className={`text-2xl font-bold transition-all duration-300 group-hover:scale-105 ${
-                darkMode ? 'text-emerald-400' : 'gradient-text'
+                darkMode ? "text-emerald-400" : "gradient-text"
               }`}
             >
               Farmly
@@ -46,7 +50,7 @@ export default function DesktopHeader({
           variant="subtle"
           onClick={toggleDarkMode}
           className={`p-3 rounded-full transition-all duration-300 hover:scale-110 hover:rotate-12 interactive-scale ripple-effect ${
-            darkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
+            darkMode ? "hover:bg-gray-800" : "hover:bg-gray-100"
           }`}
         >
           {darkMode ? (

@@ -1,14 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import {
-  Box,
-  Flex,
-  Text,
-  Card,
-  Group,
-  Stack,
-  Button,
-} from "@mantine/core";
+import { Box, Flex, Text, Card, Group, Stack, Button } from "@mantine/core";
 import { Sun, Moon, Clock, User, ChevronRight } from "lucide-react";
 import Article from "@/components/Article/Article";
 import Header from "@/components/Header";
@@ -17,74 +9,6 @@ import { Article as ArticleType } from "@/types/types";
 import { useQuery } from "@tanstack/react-query";
 import { getAllNewsPosts } from "@/lib/api";
 import { transformContentfulPosts } from "@/lib/utils";
-
-const sampleArticles: Article[] = [
-  {
-    id: "1",
-    title: "Regenerative Agriculture: The Future of Sustainable Farming",
-    coverImage:
-      "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&h=400&fit=crop",
-    date: "2024-05-20",
-    author: "Sarah Mitchell",
-    slug: "regenerative-agriculture-future",
-    excerpt:
-      "Discover how regenerative agriculture practices are revolutionizing farming by restoring soil health, increasing biodiversity, and creating more resilient food systems for the future.",
-    category: "Sustainable Agriculture",
-    readTime: "5 min read",
-  },
-  {
-    id: "2",
-    title: "Organic Pest Control Methods That Actually Work",
-    coverImage:
-      "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800&h=400&fit=crop",
-    date: "2024-05-19",
-    author: "James Rodriguez",
-    slug: "organic-pest-control-methods",
-    excerpt:
-      "Learn about effective organic pest control strategies that protect your crops while maintaining ecological balance and soil health without harmful chemicals.",
-    category: "Organic Farming",
-    readTime: "7 min read",
-  },
-  {
-    id: "3",
-    title: "Building Healthy Soil: The Foundation of Agroecology",
-    coverImage:
-      "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=800&h=400&fit=crop",
-    date: "2024-05-18",
-    author: "Maria Santos",
-    slug: "building-healthy-soil-agroecology",
-    excerpt:
-      "Understanding soil health is crucial for sustainable farming. Explore the microorganisms, nutrients, and practices that create thriving agricultural ecosystems.",
-    category: "Agroecology",
-    readTime: "6 min read",
-  },
-  {
-    id: "4",
-    title: "Water Conservation Techniques for Modern Farmers",
-    coverImage:
-      "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=800&h=400&fit=crop",
-    date: "2024-05-17",
-    author: "David Chen",
-    slug: "water-conservation-techniques",
-    excerpt:
-      "With water scarcity becoming a global concern, discover innovative irrigation methods and water management strategies that maximize efficiency while minimizing waste.",
-    category: "Sustainable Agriculture",
-    readTime: "8 min read",
-  },
-  {
-    id: "5",
-    title: "Companion Planting: Nature's Partnership in Agriculture",
-    coverImage:
-      "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800&h=400&fit=crop",
-    date: "2024-05-16",
-    author: "Emily Johnson",
-    slug: "companion-planting-guide",
-    excerpt:
-      "Harness the power of plant partnerships to naturally improve soil fertility, control pests, and increase crop yields through strategic companion planting.",
-    category: "Organic Farming",
-    readTime: "4 min read",
-  },
-];
 
 const categories = [
   "Sustainable Agriculture",
@@ -112,8 +36,7 @@ export default function Farmly() {
   });
 
   // Use Contentful data or fallback to sample articles
-  const displayArticles =
-    articles && articles.length > 0 ? articles : sampleArticles;
+  const displayArticles = articles && articles.length > 0 ? articles : [];
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", darkMode);
@@ -128,7 +51,7 @@ export default function Farmly() {
   };
 
   const formatDate = (date: string | Date) => {
-    return new Date(date).toLocaleDateString("en-US", {
+    return new Date(date).toLocaleDateString("en-UK", {
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -138,7 +61,7 @@ export default function Farmly() {
   if (selectedArticle) {
     return (
       <Box
-        className={`min-h-screen transition-colors duration-300 ${
+        className={`min-h-screen transition-colors duration-300  border-red ${
           darkMode ? "dark bg-gray-900 text-white" : "bg-white text-gray-900"
         }`}
       >
@@ -234,25 +157,27 @@ export default function Farmly() {
 
   return (
     <Box
-      className={`min-h-screen transition-colors duration-300 ${
+      className={`min-h-screen border-red transition-colors duration-300 ${
         darkMode ? "dark bg-gray-900 text-white" : "bg-white text-gray-900"
       }`}
     >
-      {/* Modular Header Component */}
+      {/* Modular Header Component */}{" "}
       <Header
         darkMode={darkMode}
         toggleDarkMode={toggleDarkMode}
         mobileMenuOpen={mobileMenuOpen}
         setMobileMenuOpen={setMobileMenuOpen}
       />
-
       {/* Mobile Menu Drawer */}
-      <MobileDrawer
-        mobileMenuOpen={mobileMenuOpen}
-        setMobileMenuOpen={setMobileMenuOpen}
-        categories={categories}
-      />
-
+      <div className="md:hidden">
+        {" "}
+        <MobileDrawer
+          mobileMenuOpen={mobileMenuOpen}
+          setMobileMenuOpen={setMobileMenuOpen}
+          categories={categories}
+          darkMode={darkMode}
+        />
+      </div>
       {/* Main Content */}
       <Box className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Flex gap="xl" className="relative">
@@ -320,7 +245,7 @@ export default function Farmly() {
                         {article.title}
                       </Text>
                       <Text className="text-xs text-gray-500 dark:text-gray-400">
-                        {formatDate(article.date)}
+                        {article?.date ? formatDate(article.date) : null}
                       </Text>
                     </Box>
                   ))}

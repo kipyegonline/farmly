@@ -1,8 +1,8 @@
-'use client';
-import React from 'react';
-import { Flex, Box, Text, Button } from '@mantine/core';
-import { Leaf, Sun, Moon, Menu } from 'lucide-react';
-import Link from 'next/link';
+"use client";
+import React from "react";
+import { Flex, Box, Text, Button } from "@mantine/core";
+import { Leaf, Sun, Moon, Menu } from "lucide-react";
+import Link from "next/link";
 
 type MobileHeaderProps = {
   darkMode: boolean;
@@ -18,21 +18,25 @@ export default function MobileHeader({
   setMobileMenuOpen,
 }: MobileHeaderProps) {
   return (
-    <Flex justify="space-between" align="center" className="h-16 md:hidden">
+    <Flex
+      justify="space-between"
+      align="center"
+      className="h-16 md:hidden border-red"
+    >
       <Link href="/">
         <Flex align="center" gap="sm" className="cursor-pointer">
           <Box
             className={`p-1.5 rounded-lg transition-all duration-300 ${
               darkMode
-                ? 'bg-gradient-to-br from-emerald-900 to-emerald-800'
-                : 'bg-gradient-to-br from-emerald-100 to-emerald-200'
+                ? "bg-gradient-to-br from-emerald-900 to-emerald-800"
+                : "bg-gradient-to-br from-emerald-100 to-emerald-200"
             }`}
           >
             <Leaf className="text-emerald-600" size={20} />
           </Box>
           <Text
             className={`text-lg font-bold ${
-              darkMode ? 'text-emerald-400' : 'gradient-text'
+              darkMode ? "text-emerald-400" : "gradient-text"
             }`}
           >
             Farmly
@@ -63,4 +67,3 @@ export default function MobileHeader({
     </Flex>
   );
 }
-
