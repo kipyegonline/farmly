@@ -69,16 +69,7 @@ export default async function Page() {
   return (
     <div className="container mx-auto px-0  ">
       {/**<HomePageComponent /> */}
-      {heroPost && (
-        <HeroPost
-          title={heroPost.title}
-          coverImage={heroPost.coverImage}
-          date={heroPost.date}
-          author={heroPost.author}
-          slug={heroPost.slug}
-          excerpt={heroPost.excerpt}
-        />
-      )}
+
       <Divider />
       <Farmly />
     </div>

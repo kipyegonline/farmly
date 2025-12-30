@@ -1,4 +1,5 @@
 "use client";
+import React, { useState, useEffect } from "react";
 import {
   MantineProvider,
   createTheme,
@@ -6,15 +7,26 @@ import {
 } from "@mantine/core";
 import { generateColors, generateColorsMap } from "@mantine/colors-generator";
 import { Inter, Poppins } from "next/font/google";
-import { NavigationProgress } from "@mantine/nprogress";
+import { RouterProgress } from "@/components/RouterProgress";
 // core styles are required for all packages
 import "@mantine/core/styles.css";
 import "@mantine/nprogress/styles.css";
 import "./globals.css";
 import { EXAMPLE_PATH, CMS_NAME } from "@/lib/constants";
 import Footer from "@/components/ui/Footer";
+import Header from "@/components/Header";
+import MobileDrawer from "@/components/Header/MobileDrawer";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+
+const categories = [
+  "Sustainable Agriculture",
+  "Organic Farming",
+  "Agroecology",
+  "Soil Health",
+  "Water Management",
+  "Pest Control",
+];
 const primaryColours: MantineColorsTuple = [
   "#effbef",
   "#dcf4dc",
@@ -89,19 +101,47 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const [darkMode, setDarkMode] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", darkMode);
+  }, [darkMode]);
+
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
+
   return (
     <html lang="en" className={poppins.variable}>
-      <body>
-        <section className="min-h-screen ">
-          <main>
-            <QueryClientProvider client={queryClient}>
-              <MantineProvider theme={theme}>
-                <NavigationProgress />
-                {children}
-              </MantineProvider>
-              <ReactQueryDevtools initialIsOpen={false} />
-            </QueryClientProvider>
-          </main>
+      <body
+        className={`min-h-screen transition-colors duration-300 ${darkMode ? "dark bg-gray-900 text-white" : "bg-white text-gray-900"
+          }`}
+      >
+        <section className="min-h-screen">
+          <QueryClientProvider client={queryClient}>
+            <MantineProvider theme={theme}>
+              <RouterProgress />
+              {/* Global Header */}
+              <Header
+                darkMode={darkMode}
+                toggleDarkMode={toggleDarkMode}
+                mobileMenuOpen={mobileMenuOpen}
+                setMobileMenuOpen={setMobileMenuOpen}
+              />
+              {/* Mobile Menu Drawer */}
+              <div className="md:hidden">
+                <MobileDrawer
+                  mobileMenuOpen={mobileMenuOpen}
+                  setMobileMenuOpen={setMobileMenuOpen}
+                  categories={categories}
+                  darkMode={darkMode}
+                />
+              </div>
+              <main>{children}</main>
+            </MantineProvider>
+            <ReactQueryDevtools initialIsOpen={false} />
+          </QueryClientProvider>
           <Footer />
         </section>
       </body>

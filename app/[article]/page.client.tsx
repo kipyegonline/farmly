@@ -26,12 +26,13 @@ import {
   MessageCircle,
   BookOpen,
 } from "lucide-react";
-import { notFound } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 import { Markdown } from "@/lib/markdown";
 
 interface Article {
-  id: string;
+  id: { sys: { id: string } };
   title: string;
+
   coverImage: string;
   date: string | Date;
   author: string;
@@ -46,108 +47,21 @@ interface Article {
   comments?: number;
 }
 
-const currentArticle: Article = {
-  id: "1",
-  title: "Regenerative Agriculture: The Future of Sustainable Farming",
-  coverImage:
-    "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200&h=600&fit=crop",
-  date: "2024-05-20",
-  author: "Sarah Mitchell",
-  slug: "regenerative-agriculture-future",
-  excerpt:
-    "Discover how regenerative agriculture practices are revolutionizing farming by restoring soil health, increasing biodiversity, and creating more resilient food systems for the future.",
-  category: "Sustainable Agriculture",
-  readTime: "8 min read",
-  authorAvatar:
-    "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face",
-  content: `
-    <p>Regenerative agriculture represents a paradigm shift in how we approach farming and land management. Unlike conventional agriculture that often depletes soil and relies heavily on external inputs, regenerative practices work with natural systems to restore and enhance the health of our agricultural ecosystems.</p>
-    
-    <h2>The Principles of Regenerative Agriculture</h2>
-    <p>At its core, regenerative agriculture is built on several key principles that work together to create thriving, sustainable farming systems:</p>
-    
-    <h3>1. Soil Health First</h3>
-    <p>Healthy soil is the foundation of regenerative agriculture. This means focusing on building soil organic matter, improving soil structure, and supporting the billions of microorganisms that make soil come alive. Practices like cover cropping, composting, and minimal tillage all contribute to healthier soils.</p>
-    
-    <h3>2. Biodiversity Enhancement</h3>
-    <p>Diverse ecosystems are more resilient ecosystems. Regenerative farms integrate multiple plant species, beneficial insects, and wildlife habitats to create balanced agricultural landscapes that naturally regulate pests and diseases.</p>
-    
-    <h3>3. Water Cycle Restoration</h3>
-    <p>Healthy soils with good structure can hold more water, reducing the need for irrigation and preventing erosion. Regenerative practices help restore natural water cycles, making farms more resilient to both droughts and floods.</p>
-    
-    <h2>The Benefits Extend Beyond the Farm</h2>
-    <p>The impact of regenerative agriculture reaches far beyond individual farms. These practices contribute to climate change mitigation by sequestering carbon in soil, reduce water pollution by minimizing chemical runoff, and support rural communities by creating more sustainable livelihoods for farmers.</p>
-    
-    <h3>Climate Impact</h3>
-    <p>Regenerative agriculture has the potential to be a significant tool in combating climate change. Healthy soils can sequester substantial amounts of carbon dioxide from the atmosphere, effectively turning farms into carbon sinks rather than carbon sources.</p>
-    
-    <h3>Economic Viability</h3>
-    <p>While the transition to regenerative practices may require initial investment and learning, many farmers find that these methods ultimately reduce input costs and increase profitability through improved soil fertility, reduced pest pressure, and premium market opportunities.</p>
-    
-    <h2>Getting Started with Regenerative Practices</h2>
-    <p>For farmers interested in transitioning to regenerative agriculture, the journey often begins with small steps. Start with one field or one practice, such as planting cover crops or reducing tillage. Building soil health takes time, but the benefits compound over years of consistent application.</p>
-    
-    <p>The future of agriculture lies not in fighting against natural systems, but in working with them. Regenerative agriculture offers a path forward that can feed the world while healing the land we depend on.</p>
-  `,
-  tags: [
-    "Regenerative Agriculture",
-    "Soil Health",
-    "Climate Change",
-    "Sustainable Farming",
-  ],
-  likes: 234,
-  comments: 18,
-};
-
-const recommendedArticles: Article[] = [
-  {
-    id: "2",
-    title: "Building Healthy Soil: The Foundation of Agroecology",
-    coverImage:
-      "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=200&fit=crop",
-    date: "2024-05-18",
-    author: "Maria Santos",
-    slug: "building-healthy-soil-agroecology",
-    excerpt: "Understanding soil health is crucial for sustainable farming.",
-    category: "Agroecology",
-    readTime: "6 min read",
-    content: "",
-  },
-  {
-    id: "3",
-    title: "Water Conservation Techniques for Modern Farmers",
-    coverImage:
-      "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=400&h=200&fit=crop",
-    date: "2024-05-17",
-    author: "David Chen",
-    slug: "water-conservation-techniques",
-    excerpt: "Innovative irrigation methods and water management strategies.",
-    category: "Water Management",
-    readTime: "7 min read",
-    content: "",
-  },
-  {
-    id: "4",
-    title: "Organic Pest Control Methods That Actually Work",
-    coverImage:
-      "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&h=200&fit=crop",
-    date: "2024-05-16",
-    author: "James Rodriguez",
-    slug: "organic-pest-control-methods",
-    excerpt:
-      "Effective organic pest control strategies for sustainable farming.",
-    category: "Organic Farming",
-    readTime: "5 min read",
-    content: "",
-  },
-];
-
 export default function ArticlePage({ post, morePosts }) {
+  const router = useRouter();
   const [darkMode, setDarkMode] = useState(false);
   const [showScrollAnimation, setShowScrollAnimation] = useState(true);
   const [liked, setLiked] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const [readingProgress, setReadingProgress] = useState(0);
+
+  // Filter out the current article from recommended reading
+  const recommendedPosts = React.useMemo(() => {
+    if (!morePosts || !post) return [];
+    return morePosts.filter(
+      (article: Article) => article?.sys?.id !== post?.sys?.id
+    );
+  }, [morePosts, post?.sys.id]);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", darkMode);
@@ -184,8 +98,8 @@ export default function ArticlePage({ post, morePosts }) {
 
   const handleShare = async (platform?: string) => {
     const shareData = {
-      title: currentArticle.title,
-      text: currentArticle.excerpt,
+      title: post?.title ?? "",
+      text: post?.excerpt ?? "",
       url: window.location.href,
     };
 
@@ -199,7 +113,7 @@ export default function ArticlePage({ post, morePosts }) {
           break;
         case "twitter":
           shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-            currentArticle.title
+            post?.title ?? ""
           )}&url=${encodeURIComponent(window.location.href)}`;
           break;
         case "linkedin":
@@ -221,7 +135,8 @@ export default function ArticlePage({ post, morePosts }) {
       }
     }
   };
-  console.log({ post, morePosts }, "post and more posts");
+  console.log({ post, morePosts }, "[post and more posts]");
+  const tags = [];
   return (
     <Box
       className={`min-h-screen transition-colors duration-500 ${
@@ -272,26 +187,35 @@ export default function ArticlePage({ post, morePosts }) {
 
       {/* Hero Section */}
       <Box className="relative h-screen flex items-center justify-center overflow-hidden">
-        {/* Background Image with Overlay and Parallax */}
-        <Box
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-100"
-          style={{
-            backgroundImage: `url(${post.coverImage.url})`,
-            transform: `translateY(${scrollY * 0.5}px) scale(${
-              1 + scrollY * 0.0002
-            })`,
-          }}
-        >
-          <Box className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70" />
-        </Box>
+        {/* Background Image with Overlay and Parallax OR Dark Fallback */}
+        {post.coverImage ? (
+          <Box
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-100"
+            style={{
+              backgroundImage: `url(${post.coverImage.url})`,
+              transform: `translateY(${scrollY * 0.5}px) scale(${
+                1 + scrollY * 0.0002
+              })`,
+            }}
+          >
+            <Box className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70" />
+          </Box>
+        ) : (
+          <Box
+            className="absolute inset-0"
+            style={{ backgroundColor: "rgba(0,0,0,.5)" }}
+          >
+            <Box className="absolute inset-0 bg-gradient-to-b from-gray-700 via-gray-800 to-gray-900" />
+          </Box>
+        )}
 
         {/* Hero Content */}
-        <Box className="relative z-10 text-center text-white max-w-4xl mx-auto px-4">
+        <Box className="relative z-10 text-center max-w-4xl mx-auto px-4">
           <Text className="text-emerald-400 font-semibold mb-4 text-lg tracking-wide uppercase animate-fadeInUp stagger-1">
             {post.category}
           </Text>
 
-          <Text className="text-4xl md:text-6xl font-bold mb-6 leading-tight animate-fadeInUp stagger-2">
+          <Text className="text-4xl md:text-6xl font-bold mb-6 leading-tight animate-fadeInUp stagger-2 text-white">
             {post.title}
           </Text>
 
@@ -314,7 +238,7 @@ export default function ArticlePage({ post, morePosts }) {
               className="border-2 border-white/20 animate-scaleIn stagger-4 transition-transform duration-300 hover:scale-110 hover:border-emerald-400"
             />
             <Box className="text-left">
-              <Text className="font-semibold text-lg transition-colors duration-300 hover:text-emerald-400">
+              <Text className="font-semibold text-lg transition-colors duration-300 hover:text-emerald-400 text-white">
                 {post.author}
               </Text>
               {post?.date && (
@@ -354,7 +278,7 @@ export default function ArticlePage({ post, morePosts }) {
               <Box className="max-w-none animate-in fade-in slide-in-from-bottom duration-700 delay-300">
                 {/* Article Tags */}
                 <Flex wrap="wrap" gap="xs" className="mb-8">
-                  {currentArticle.tags?.map((tag, index) => (
+                  {[].map((tag, index) => (
                     <Text
                       key={tag}
                       className={`px-3 py-1 rounded-full text-sm font-medium cursor-pointer interactive-scale animate-fadeInUp ${
@@ -380,14 +304,17 @@ export default function ArticlePage({ post, morePosts }) {
                   prose-p:mb-6 prose-p:text-gray-700 dark:prose-p:text-gray-300
                   prose-p:text-lg prose-p:leading-relaxed
                   `}
-                  dangerouslySetInnerHTML={{ __html: currentArticle.content }}
+                  dangerouslySetInnerHTML={{ __html: post.body }}
                 />
-                <Markdown content={post.body} />
+                <Box className="prose prose-lg max-w-none my-6 md:my-10 lg:my-12 prose-p:py-2 prose-p:leading-relaxed prose-headings:mt-8 prose-headings:mb-4">
+                  <Markdown content={post.body ?? ""} />
+                </Box>
                 {/* Engagement Stats */}
                 <Flex
                   justify="space-between"
                   align="center"
                   className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700"
+                  display={"none"}
                 >
                   <Flex gap="lg">
                     <Button
@@ -407,14 +334,14 @@ export default function ArticlePage({ post, morePosts }) {
                         liked ? "text-red-500 scale-110" : "text-gray-500"
                       } hover:text-red-500`}
                     >
-                      {currentArticle.likes! + (liked ? 1 : 0)} Likes
+                      {10} Likes
                     </Button>
                     <Button
                       variant="subtle"
                       leftSection={<MessageCircle size={18} />}
                       className="text-gray-500 hover:text-blue-500 interactive-scale ripple-effect transition-all duration-300"
                     >
-                      {currentArticle.comments} Comments
+                      {10} Comments
                     </Button>
                     <Button
                       variant="subtle"
@@ -491,20 +418,27 @@ export default function ArticlePage({ post, morePosts }) {
                     Recommended Reading
                   </Text>
                   <Stack gap="md">
-                    {morePosts.map((article: Article, index: number) => (
+                    {recommendedPosts.map((article: Article, index: number) => (
                       <Box
-                        key={article.id}
+                        key={article.sys.id}
+                        onClick={() => router.push(`/${article.sys.id}`)}
                         className={`group cursor-pointer p-3 rounded-lg transition-all duration-300 hover:shadow-lg animate-fadeInUp card-shine ${
                           darkMode ? "hover:bg-gray-700" : "hover:bg-gray-50"
                         }`}
                         style={{ animationDelay: `${(index + 6) * 100}ms` }}
                       >
                         <Box className="relative overflow-hidden rounded-md mb-3 shadow-md">
-                          <img
-                            src={article.coverImage?.url}
-                            alt={article.title}
-                            className="w-full h-20 object-cover transition-all duration-500 group-hover:scale-110 group-hover:brightness-110 group-hover:rotate-1"
-                          />
+                          {article.coverImage?.url ? (
+                            <img
+                              src={article.coverImage.url}
+                              alt={article.title}
+                              className="w-full h-20 object-cover transition-all duration-500 group-hover:scale-110 group-hover:brightness-110 group-hover:rotate-1"
+                            />
+                          ) : (
+                            <Box className="w-full h-20 bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center">
+                              <BookOpen size={24} className="text-gray-400" />
+                            </Box>
+                          )}
                           <Box className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                         </Box>
                         <Text className="font-semibold text-sm line-clamp-2 mb-2 group-hover:text-emerald-600 transition-all duration-300 group-hover:translate-x-1">
@@ -535,9 +469,10 @@ export default function ArticlePage({ post, morePosts }) {
               You might also like
             </Text>
             <Box className="grid gap-6">
-              {morePosts.map((article: Article, index: number) => (
+              {recommendedPosts.map((article: Article, index: number) => (
                 <Card
-                  key={article.id}
+                  key={article?.sys?.id}
+                  onClick={() => router.push(`/${article?.sys?.id}`)}
                   className={`group cursor-pointer transition-all duration-500 hover:shadow-xl border card-shine rounded-2xl ${
                     darkMode
                       ? "border-gray-700 bg-gray-800"
@@ -547,11 +482,17 @@ export default function ArticlePage({ post, morePosts }) {
                 >
                   <Flex gap="md">
                     <Box className="w-24 h-24 flex-shrink-0">
-                      <img
-                        src={article.coverImage?.url}
-                        alt={article.title}
-                        className="w-full h-full object-cover rounded-lg transition-all duration-500 group-hover:scale-110 group-hover:rotate-2 shadow-md"
-                      />
+                      {article.coverImage?.url ? (
+                        <img
+                          src={article.coverImage.url}
+                          alt={article.title}
+                          className="w-full h-full object-cover rounded-lg transition-all duration-500 group-hover:scale-110 group-hover:rotate-2 shadow-md"
+                        />
+                      ) : (
+                        <Box className="w-full h-full bg-gradient-to-br from-gray-600 to-gray-800 rounded-lg flex items-center justify-center shadow-md">
+                          <BookOpen size={28} className="text-gray-400" />
+                        </Box>
+                      )}
                     </Box>
                     <Box className="flex-1">
                       <Text className="font-semibold line-clamp-2 mb-2 group-hover:text-emerald-600 transition-all duration-300 group-hover:translate-x-2">
