@@ -32,7 +32,6 @@ import { Markdown } from "@/lib/markdown";
 interface Article {
   id: { sys: { id: string } };
   title: string;
-
   coverImage: string;
   date: string | Date;
   author: string;
@@ -405,62 +404,71 @@ export default function ArticlePage({ post, morePosts }) {
             </Box>
 
             {/* Recommended Articles Sidebar - 20% width, hidden on mobile */}
-            <Box className="hidden lg:block w-2/5">
-              <Box className="sticky top-24">
-                <Card
-                  className={`p-6 card-shine ${
-                    darkMode
-                      ? "bg-gray-800 border-gray-700"
-                      : "bg-white border-gray-200"
-                  } border shadow-lg hover:shadow-xl animate-slideInFromRight stagger-5 transition-all duration-500 rounded-2xl`}
-                >
-                  <Text className="font-bold text-lg mb-6 text-gradient-animated">
-                    Recommended Reading
-                  </Text>
-                  <Stack gap="md">
-                    {recommendedPosts.map((article: Article, index: number) => (
-                      <Box
-                        key={article.sys.id}
-                        onClick={() => router.push(`/${article.sys.id}`)}
-                        className={`group cursor-pointer p-3 rounded-lg transition-all duration-300 hover:shadow-lg animate-fadeInUp card-shine ${
-                          darkMode ? "hover:bg-gray-700" : "hover:bg-gray-50"
-                        }`}
-                        style={{ animationDelay: `${(index + 6) * 100}ms` }}
-                      >
-                        <Box className="relative overflow-hidden rounded-md mb-3 shadow-md">
-                          {article.coverImage?.url ? (
-                            <img
-                              src={article.coverImage.url}
-                              alt={article.title}
-                              className="w-full h-20 object-cover transition-all duration-500 group-hover:scale-110 group-hover:brightness-110 group-hover:rotate-1"
-                            />
-                          ) : (
-                            <Box className="w-full h-20 bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center">
-                              <BookOpen size={24} className="text-gray-400" />
+            {recommendedPosts.length > 0 && (
+              <Box className="hidden lg:block w-2/5">
+                <Box className="sticky top-24">
+                  <Card
+                    className={`p-6 card-shine ${
+                      darkMode
+                        ? "bg-gray-800 border-gray-700"
+                        : "bg-white border-gray-200"
+                    } border shadow-lg hover:shadow-xl animate-slideInFromRight stagger-5 transition-all duration-500 rounded-2xl`}
+                  >
+                    <Text className="font-bold text-lg mb-6 text-gradient-animated">
+                      Recommended Reading
+                    </Text>
+                    <Stack gap="md">
+                      {recommendedPosts.map(
+                        (article: Article, index: number) => (
+                          <Box
+                            key={article.sys.id}
+                            onClick={() => router.push(`/${article.sys.id}`)}
+                            className={`group cursor-pointer p-3 rounded-lg transition-all duration-300 hover:shadow-lg animate-fadeInUp card-shine ${
+                              darkMode
+                                ? "hover:bg-gray-700"
+                                : "hover:bg-gray-50"
+                            }`}
+                            style={{ animationDelay: `${(index + 6) * 100}ms` }}
+                          >
+                            <Box className="relative overflow-hidden rounded-md mb-3 shadow-md">
+                              {article.coverImage?.url ? (
+                                <img
+                                  src={article.coverImage.url}
+                                  alt={article.title}
+                                  className="w-full h-20 object-cover transition-all duration-500 group-hover:scale-110 group-hover:brightness-110 group-hover:rotate-1"
+                                />
+                              ) : (
+                                <Box className="w-full h-20 bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center">
+                                  <BookOpen
+                                    size={24}
+                                    className="text-gray-400"
+                                  />
+                                </Box>
+                              )}
+                              <Box className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                             </Box>
-                          )}
-                          <Box className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                        </Box>
-                        <Text className="font-semibold text-sm line-clamp-2 mb-2 group-hover:text-emerald-600 transition-all duration-300 group-hover:translate-x-1">
-                          {article.title}
-                        </Text>
-                        <Flex
-                          align="center"
-                          gap="xs"
-                          className="text-xs text-gray-500 dark:text-gray-400 transition-colors group-hover:text-emerald-600"
-                        >
-                          <Text>{article.author}</Text>
-                          <Text>•</Text>
-                          <Text>{article.readTime}</Text>
-                        </Flex>
-                      </Box>
-                    ))}
-                  </Stack>
-                </Card>
+                            <Text className="font-semibold text-sm line-clamp-2 mb-2 group-hover:text-emerald-600 transition-all duration-300 group-hover:translate-x-1">
+                              {article.title}
+                            </Text>
+                            <Flex
+                              align="center"
+                              gap="xs"
+                              className="text-xs text-gray-500 dark:text-gray-400 transition-colors group-hover:text-emerald-600"
+                            >
+                              <Text>{article.author}</Text>
+                              <Text>•</Text>
+                              <Text>{article.readTime}</Text>
+                            </Flex>
+                          </Box>
+                        )
+                      )}
+                    </Stack>
+                  </Card>
 
-                {/* Mobile recommendation - Bottom section */}
+                  {/* Mobile recommendation - Bottom section */}
+                </Box>
               </Box>
-            </Box>
+            )}
           </Flex>
 
           {/* Mobile Recommended Articles - Show at bottom on mobile */}

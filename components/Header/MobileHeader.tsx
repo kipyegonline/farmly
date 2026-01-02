@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Flex, Box, Text, Button } from "@mantine/core";
+import { Flex, Box, Text, Button, Image } from "@mantine/core";
 import { Leaf, Sun, Moon, Menu } from "lucide-react";
 import Link from "next/link";
 
@@ -18,29 +18,16 @@ export default function MobileHeader({
   setMobileMenuOpen,
 }: MobileHeaderProps) {
   return (
-    <Flex
-      justify="space-between"
-      align="center"
-      className="h-16 md:hidden border-red"
-    >
+    <Flex justify="space-between" align="center" className="h-16 md:hidden ">
       <Link href="/">
-        <Flex align="center" gap="sm" className="cursor-pointer">
-          <Box
-            className={`p-1.5 rounded-lg transition-all duration-300 ${
-              darkMode
-                ? "bg-gradient-to-br from-emerald-900 to-emerald-800"
-                : "bg-gradient-to-br from-emerald-100 to-emerald-200"
-            }`}
-          >
-            <Leaf className="text-emerald-600" size={20} />
-          </Box>
-          <Text
-            className={`text-lg font-bold ${
-              darkMode ? "text-emerald-400" : "gradient-text"
-            }`}
-          >
-            Farmly
-          </Text>
+        <Flex align="center" gap="sm" className="cursor-pointer h-10">
+          <Image
+            src="/farmly_logo.png"
+            alt="Farmly logo"
+            w={200}
+            h={80}
+            fit="contain"
+          />
         </Flex>
       </Link>
 
@@ -51,9 +38,9 @@ export default function MobileHeader({
           className="p-2 rounded-full hover:scale-110 transition-transform duration-300 interactive-scale ripple-effect"
         >
           {darkMode ? (
-            <Sun size={18} className="text-yellow-400" />
+            <Sun size={30} className="text-yellow-400" />
           ) : (
-            <Moon size={18} className="text-gray-700" />
+            <Moon size={30} className="text-gray-700" />
           )}
         </Button>
         <Button
@@ -61,7 +48,7 @@ export default function MobileHeader({
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           className="p-2 md:hidden interactive-scale ripple-effect"
         >
-          <Menu size={18} />
+          <Menu size={30} />
         </Button>
       </Flex>
     </Flex>

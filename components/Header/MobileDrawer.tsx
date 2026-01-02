@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Drawer, Stack, Text } from "@mantine/core";
+import { Drawer, Stack, Text, Image } from "@mantine/core";
 
 type MobileDrawerProps = {
   mobileMenuOpen: boolean;
@@ -25,13 +25,13 @@ export default function MobileDrawer({
         darkMode ? " bg-gray-900 text-white" : "bg-white text-gray-900"
       } `}
       title={
-        <Text
-          className={`text-lg font-bold text-emerald-600 dark:text-emerald-400 ${
-            darkMode ? " bg-gray-900 text-white" : "bg-white text-gray-900"
-          }`}
-        >
-          Farmly
-        </Text>
+        <Image
+          src="/farmly_logo.png"
+          alt="Farmly logo"
+          w={200}
+          h={80}
+          fit="contain"
+        />
       }
     >
       <Stack
