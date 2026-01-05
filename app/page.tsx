@@ -9,10 +9,9 @@ import MoreStories from "./more-stories";
 import { getAllPosts } from "@/lib/api";
 import { CMS_NAME, CMS_URL } from "@/lib/constants";
 import { Markdown } from "@/lib/markdown";
-export const metadata = {
-  title: `Farmly | Homepage`,
-  description: `Your sustainable farming stop over`,
-};
+import Farmly from "./home";
+import HomePageComponent from "@/components/Homepage";
+import { Divider } from "@mantine/core";
 
 function HeroPost({
   title,
@@ -55,39 +54,12 @@ function HeroPost({
 }
 
 export default async function Page() {
-  const { isEnabled } = draftMode();
-  const allPosts = await getAllPosts(isEnabled);
-
-  const heroPost = allPosts?.[0];
-  const morePosts = allPosts?.slice();
-  console.log(`<|======|>`, allPosts);
   return (
-    <div className="container mx-auto px-5">
-      {heroPost && false && (
-        <HeroPost
-          title={heroPost.title}
-          coverImage={heroPost.coverImage}
-          date={heroPost.date}
-          author={heroPost.author}
-          slug={heroPost.slug}
-          excerpt={heroPost.excerpt}
-        />
-      )}
-      {morePosts.map((post, i) => (
-        <div key={i}>
-          <h1>
-            {i + 1}
-            {".) "}
-            {post.title}-----
-          </h1>
-          <section>
-            <hr />
-            {post.body && <Markdown content={post.body} />}
-          </section>
-        </div>
-      ))}
+    <div className="container mx-auto px-0  ">
+      {/**<HomePageComponent /> */}
 
-      {/*morePosts && <MoreStories morePosts={morePosts} />*/}
+      <Divider />
+      <Farmly />
     </div>
   );
 }

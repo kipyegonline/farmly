@@ -1,3 +1,9 @@
+/** author {
+    name
+    picture {
+      url
+    }
+  } */
 const POST_GRAPHQL_FIELDS = `
   slug
   title
@@ -5,14 +11,9 @@ const POST_GRAPHQL_FIELDS = `
     url
   }
   date
-  author {
-    name
-    picture {
-      url
-    }
-  }
+  author
   excerpt
-  content {
+  body {
     json
     links {
       assets {
@@ -27,6 +28,37 @@ const POST_GRAPHQL_FIELDS = `
     }
   }
 `;
+
+const NEWS_POST_FIELDS = `
+  sys {
+    id
+  }
+  title
+  slug
+  excerpt
+  coverImage {
+    url
+  }
+  category
+  author
+  date
+  readTime
+  body {
+    json
+    links {
+      assets {
+        block {
+          sys {
+            id
+          }
+          url
+          description
+        }
+      }
+    }
+  }
+`;
+
 const BOOK_FIELDS = `{
 title,
 author,
@@ -47,27 +79,20 @@ body  {
     }
   }
     }`;
-const prev = process.env.CONTENTFUL_PREVIEW_ACCESS_TOKEN;
-const prod = process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKENN;
-const spaceId = process.env.CONTENTFUL_SPACE_ID;
-
+const prev = process.env.NEXT_PUBLIC_CONTENTFUL_PREVIEW_ACCESS_TOKEN;
+const prod = process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN;
+const spaceId = process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID;
+const collectionName = `bookshopCollection`;
 async function fetchGraphQL(query: string, preview = true): Promise<any> {
-  return fetch(
-    `https://graphql.contentful.com/content/v1/spaces/${process.env.CONTENTFUL_SPACE_ID}`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${
-          preview
-            ? process.env.CONTENTFUL_PREVIEW_ACCESS_TOKEN
-            : process.env.CONTENTFUL_ACCESS_TOKEN
-        }`,
-      },
-      body: JSON.stringify({ query }),
-      next: { tags: ["posts"] },
-    }
-  ).then((response) => response.json());
+  return fetch(`https://graphql.contentful.com/content/v1/spaces/${spaceId}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${preview ? prev : prod}`,
+    },
+    body: JSON.stringify({ query }),
+    next: { tags: ["posts"] },
+  }).then((response) => response.json());
 }
 
 function extractPost(fetchResponse: any): any {
@@ -75,15 +100,15 @@ function extractPost(fetchResponse: any): any {
 }
 
 function extractPostEntries(fetchResponse: any): any[] {
-  console.log(fetchResponse, ":fr");
+  console.log(fetchResponse, "______fetchResponse");
   if (fetchResponse) {
     const {
       data: {
-        payload: { books },
+        payload: { posts },
       },
     } = fetchResponse;
-    console.log(books, "hoooks");
-    return books; // fetchResponse?.payload.books;
+
+    return posts; // fetchResponse?.payload.books;
   } else {
     return [];
   }
@@ -92,7 +117,7 @@ function extractPostEntries(fetchResponse: any): any[] {
 export async function getPreviewPostBySlug(slug: string | null): Promise<any> {
   const entry = await fetchGraphQL(
     `query {
-      postCollection(where: { slug: "${slug}" }, preview: true, limit: 1) {
+      bookReaderCollection(where: { slug: "${slug}" }, preview: true, limit: 1) {
         items {
           ${POST_GRAPHQL_FIELDS}
         }
@@ -104,41 +129,73 @@ export async function getPreviewPostBySlug(slug: string | null): Promise<any> {
 }
 
 export async function getAllPosts(isDraftMode: boolean): Promise<any[]> {
-  const entries = await fetchGraphQL(
-    `query {
-    
-   payload: bookReaderCollection(limit:5){
-    
-    total,
-    books:items  ${BOOK_FIELDS}   
-    }
-    }` /*
-    `query {
-      postCollection(where: { slug_exists: true }, order: date_DESC, preview: ${
-        isDraftMode ? "true" : "false"
+  try {
+    const entries = await fetchGraphQL(
+      `query {
+  
+      bookReaderCollection(where: { slug_exists: true }, order: date_DESC,limit:10, preview: ${isDraftMode ? "true" : "false"
       }) {
         items {
           ${POST_GRAPHQL_FIELDS}
         }
       }
     }`,
-    isDraftMode,*/
+      isDraftMode
+    );
+
+    return extractPost(entries);
+  } catch (error) {
+    return [];
+  }
+}
+
+export async function getAllNewsPosts(
+  isDraftMode: boolean = false
+): Promise<any[]> {
+  const entries = await fetchGraphQL(
+    `query {
+      news:bookReaderCollection( preview: ${isDraftMode ? "true" : "false"
+    }, limit:10, order: date_DESC) {
+        posts:items {
+          ${NEWS_POST_FIELDS}
+        }
+      }
+    }`,
+    isDraftMode
+  );
+  console.log("entries:", entries);
+  return entries?.data?.news?.posts || [];
+}
+
+export async function getNewsPostBySlug(
+  slug: string,
+  preview: boolean = false
+): Promise<any> {
+  const entry = await fetchGraphQL(
+    `query {
+      newsPostCollection(where: { slug: "${slug}" }, preview: ${preview ? "true" : "false"
+    }, limit: 1) {
+        items {
+          ${NEWS_POST_FIELDS}
+        }
+      }
+    }`,
+    preview
   );
 
-  return extractPostEntries(entries);
+  return entry?.data?.newsPostCollection?.items?.[0] || null;
 }
 
 export async function getPostAndMorePosts(
-  slug: string,
+  id: string,
   preview: boolean
 ): Promise<any> {
   const entry = await fetchGraphQL(
     `query {
-      postCollection(where: { slug: "${slug}" }, preview: ${
-      preview ? "true" : "false"
+      post:bookReaderCollection(where: { sys: { id: "${id}" } }, preview: ${preview ? "true" : "false"
     }, limit: 1) {
         items {
-          ${POST_GRAPHQL_FIELDS}
+          ${NEWS_POST_FIELDS}
         }
       }
     }`,
@@ -146,18 +203,18 @@ export async function getPostAndMorePosts(
   );
   const entries = await fetchGraphQL(
     `query {
-      postCollection(where: { slug_not_in: "${slug}" }, order: date_DESC, preview: ${
-      preview ? "true" : "false"
-    }, limit: 2) {
+     posts: bookReaderCollection(where: { sys: { id_not: "${id}" } }, order: date_DESC, preview: ${preview ? "true" : "false"
+    }, limit: 4) {
         items {
-          ${POST_GRAPHQL_FIELDS}
+          ${NEWS_POST_FIELDS}
         }
       }
     }`,
     preview
   );
+
   return {
-    post: extractPost(entry),
-    morePosts: extractPostEntries(entries),
+    post: entry?.data?.post?.items?.[0] || null,
+    morePosts: entries?.data?.posts?.items || [],
   };
 }
