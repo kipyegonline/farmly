@@ -27,26 +27,35 @@ import {
   BookOpen,
 } from "lucide-react";
 import { notFound, useRouter } from "next/navigation";
-import { Markdown } from "@/lib/markdown";
+import { Content, Markdown } from "@/lib/markdown";
 
-interface Article {
-  id: { sys: { id: string } };
-  title: string;
-  coverImage: string;
-  date: string | Date;
-  author: string;
-  slug: string;
-  excerpt: string;
-  category: string;
-  readTime: string;
-  content: string;
-  authorAvatar?: string;
-  tags?: string[];
-  likes?: number;
-  comments?: number;
+// Derived from actual UI usage
+interface CoverImage {
+  url: string;
 }
 
-export default function ArticlePage({ post, morePosts }) {
+interface ArticleSys {
+  id: string;
+}
+
+export interface Article {
+  sys: ArticleSys;
+  title: string;
+  coverImage?: CoverImage;
+  date?: string | Date;
+  author: string;
+  excerpt?: string;
+  category?: string;
+  readTime?: string;
+  body?: Content;
+}
+
+interface ArticlePageProps {
+  post: Article;
+  morePosts: Article[];
+}
+
+export default function ArticlePage({ post, morePosts }: ArticlePageProps) {
   const router = useRouter();
   const [darkMode, setDarkMode] = useState(false);
   const [showScrollAnimation, setShowScrollAnimation] = useState(true);
@@ -303,10 +312,10 @@ export default function ArticlePage({ post, morePosts }) {
                   prose-p:mb-6 prose-p:text-gray-700 dark:prose-p:text-gray-300
                   prose-p:text-lg prose-p:leading-relaxed
                   `}
-                  dangerouslySetInnerHTML={{ __html: post.body }}
+                  dangerouslySetInnerHTML={{ __html: post.body ?? "" }}
                 />
                 <Box className="prose prose-lg max-w-none my-6 md:my-10 lg:my-12 prose-p:py-2 prose-p:leading-relaxed prose-headings:mt-8 prose-headings:mb-4">
-                  <Markdown content={post.body ?? ""} />
+                  <Markdown content={post?.body as Content} />
                 </Box>
                 {/* Engagement Stats */}
                 <Flex

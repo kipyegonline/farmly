@@ -1,10 +1,17 @@
-import React from "react";
-import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
-import { BLOCKS, INLINES, MARKS } from "@contentful/rich-text-types";
+import React, { ReactNode } from "react";
+import {
+  documentToReactComponents,
+  Options,
+} from "@contentful/rich-text-react-renderer";
+import { BLOCKS, INLINES, MARKS, Document } from "@contentful/rich-text-types";
 
-const ContentfulRichText = ({ content }: { content: any }) => {
+interface ContentfulRichTextProps {
+  content: Document;
+}
+
+const ContentfulRichText = ({ content }: ContentfulRichTextProps) => {
   // Custom options for rendering different node types
-  const options = {
+  const options: Options = {
     renderMark: {
       [MARKS.BOLD]: (text) => <strong>{text}</strong>,
       [MARKS.ITALIC]: (text) => <em>{text}</em>,
@@ -40,7 +47,7 @@ const ContentfulRichText = ({ content }: { content: any }) => {
       ),
       [BLOCKS.HR]: () => <hr className="my-6 border-t border-gray-300" />,
       [INLINES.HYPERLINK]: (node, children) => {
-        const { uri } = node.data;
+        const { uri } = node.data as { uri: string };
         return (
           <a
             href={uri}
@@ -53,8 +60,13 @@ const ContentfulRichText = ({ content }: { content: any }) => {
         );
       },
       [BLOCKS.EMBEDDED_ASSET]: (node) => {
-        const { url, title, description, width, height } =
-          node.data.target.fields;
+        const { url, title, description, width } = node.data.target.fields as {
+          url: string;
+          title?: string;
+          description?: string;
+          width?: number;
+          height?: number;
+        };
         return (
           <img
             src={url}
