@@ -29,6 +29,23 @@ body {
 }
 
 /* Custom animations */
+@keyframes gradientSweep {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient-sweep {
+  background-size: 200% 200%;
+  animation: gradientSweep 3s ease-in-out infinite;
+}
+
 @keyframes fadeInUp {
   from {
     opacity: 0;

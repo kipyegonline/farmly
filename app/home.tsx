@@ -7,6 +7,8 @@ import { useQuery } from "@tanstack/react-query";
 import { getAllNewsPosts } from "@/lib/api";
 import { transformContentfulPosts } from "@/lib/utils";
 import { usePagination } from "@/components/ui/PaginatedList";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { ar } from "date-fns/locale";
 
 const ARTICLES_PER_PAGE = 15;
 
@@ -41,8 +43,11 @@ export default function Farmly() {
 
   return (
     <Box>
-      <Text className="text-3xl md:text-4xl font-bold mb-8 animate-in slide-in-from-bottom duration-700">
-        Latest in Sustainable Agriculture
+      <Text
+        //size={{ base: "sm", sm: "md", lg: "lg", xl: "xl" }}
+        className="!text-xl  !sm:text-2xl !md:text-4xl !lg:text-5xl font-bold mb-4 sm:mb-6 md:mb-8 animate-in slide-in-from-bottom duration-700 py-2 bg-gradient-to-r from-emerald-600 via-green-500 to-yellow-400 bg-clip-text text-transparent animate-gradient-sweep"
+      >
+        Latest in Sustainable Agriculture...
       </Text>
 
       <Stack gap="xl">
@@ -71,22 +76,19 @@ export default function Farmly() {
             ))}
           </Stack>
         ) : isError ? (
-          <Box className="text-center py-12">
-            <AlertCircle size={48} className="mx-auto mb-4 text-red-500" />
-            <Text className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Failed to load articles
-            </Text>
-            <Text className="text-gray-500">Please try again later.</Text>
-          </Box>
+          <EmptyState
+            variant="error"
+            title="Failed to load articles"
+            description="We couldn't fetch the latest articles. Please try again."
+            showRefreshButton
+            onRefresh={() => window.location.reload()}
+          />
         ) : displayArticles.length === 0 ? (
-          <Box className="text-center py-12">
-            <Text className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
-              No articles found
-            </Text>
-            <Text className="text-gray-500">
-              Check back soon for new content.
-            </Text>
-          </Box>
+          <EmptyState
+            variant="no-content"
+            title="No articles found"
+            description="We're cultivating fresh content for you. Check back soon!"
+          />
         ) : (
           <>
             {paginatedArticles.map((article, index) => (

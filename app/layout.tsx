@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 
 import { Poppins } from "next/font/google";
 import { GoogleTagManager } from "@next/third-parties/google";
+import { ColorSchemeScript } from "@mantine/core";
+//eslint-disable-next-line import/no-unresolved
 import "@mantine/core/styles.css";
 import "@mantine/nprogress/styles.css";
 import "./globals.css";
@@ -25,10 +27,18 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const isProd = process.env.NODE_ENV === "production";
   return (
-    <html lang="en" className={poppins.variable}>
+    <html lang="en" className={poppins.variable} suppressHydrationWarning>
+      <head>
+        <ColorSchemeScript defaultColorScheme="auto" />
+      </head>
       <body>
-        <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID || ""} />
+        {isProd && (
+          <GoogleTagManager
+            gtmId={process.env.NEXT_PUBLIC_GTM_ID || "G-ZC1LGEJEYW"}
+          />
+        )}
         <Providers>{children}</Providers>
       </body>
     </html>

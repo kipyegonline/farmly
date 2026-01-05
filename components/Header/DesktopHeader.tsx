@@ -1,17 +1,17 @@
 "use client";
 import React from "react";
-import { Flex, Box, Text, Button, Image } from "@mantine/core";
+import { Flex, Box, Text, Button, Image, ActionIcon } from "@mantine/core";
 import { Leaf, Sun, Moon } from "lucide-react";
 import Link from "next/link";
 
 type DesktopHeaderProps = {
-  darkMode: boolean;
-  toggleDarkMode: () => void;
+  isDark: boolean;
+  toggleColorScheme: () => void;
 };
 
 export default function DesktopHeader({
-  darkMode,
-  toggleDarkMode,
+  isDark,
+  toggleColorScheme,
 }: DesktopHeaderProps) {
   return (
     <Flex
@@ -23,7 +23,7 @@ export default function DesktopHeader({
         <Flex align="center" gap="md" className="cursor-pointer">
           <Box
             className={`p-2 hidden rounded-xl transition-all duration-300 group-hover:scale-110 group-hover:rotate-12 ${
-              darkMode
+              isDark
                 ? "bg-gradient-to-br from-emerald-900 to-emerald-800"
                 : "bg-gradient-to-br from-emerald-100 to-emerald-200"
             }`}
@@ -43,19 +43,21 @@ export default function DesktopHeader({
       </Link>
 
       <Flex align="center" gap="md">
-        <Button
+        <ActionIcon
           variant="subtle"
-          onClick={toggleDarkMode}
-          className={`p-3 rounded-full transition-all duration-300 hover:scale-110 hover:rotate-12 interactive-scale ripple-effect ${
-            darkMode ? "hover:bg-gray-800" : "hover:bg-gray-100"
+          onClick={toggleColorScheme}
+          size="xl"
+          radius="xl"
+          className={`transition-all duration-300 hover:scale-110 hover:rotate-12 ${
+            isDark ? "hover:bg-gray-800" : "hover:bg-gray-100"
           }`}
         >
-          {darkMode ? (
-            <Sun size={20} className="text-yellow-400" />
+          {isDark ? (
+            <Sun size={22} className="text-yellow-400" />
           ) : (
-            <Moon size={20} className="text-gray-700" />
+            <Moon size={22} className="text-gray-700" />
           )}
-        </Button>
+        </ActionIcon>
       </Flex>
     </Flex>
   );

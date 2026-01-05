@@ -1,19 +1,19 @@
 "use client";
 import React from "react";
-import { Flex, Box, Text, Button, Image } from "@mantine/core";
+import { Flex, Box, Text, Button, Image, ActionIcon } from "@mantine/core";
 import { Leaf, Sun, Moon, Menu } from "lucide-react";
 import Link from "next/link";
 
 type MobileHeaderProps = {
-  darkMode: boolean;
-  toggleDarkMode: () => void;
+  isDark: boolean;
+  toggleColorScheme: () => void;
   mobileMenuOpen: boolean;
   setMobileMenuOpen: (open: boolean) => void;
 };
 
 export default function MobileHeader({
-  darkMode,
-  toggleDarkMode,
+  isDark,
+  toggleColorScheme,
   mobileMenuOpen,
   setMobileMenuOpen,
 }: MobileHeaderProps) {
@@ -32,24 +32,28 @@ export default function MobileHeader({
       </Link>
 
       <Flex align="center" gap="sm">
-        <Button
+        <ActionIcon
           variant="subtle"
-          onClick={toggleDarkMode}
-          className="p-2 rounded-full hover:scale-110 transition-transform duration-300 interactive-scale ripple-effect"
+          onClick={toggleColorScheme}
+          size="lg"
+          radius="xl"
+          className="hover:scale-110 transition-transform duration-300"
         >
-          {darkMode ? (
-            <Sun size={30} className="text-yellow-400" />
+          {isDark ? (
+            <Sun size={24} className="text-yellow-400" />
           ) : (
-            <Moon size={30} className="text-gray-700" />
+            <Moon size={24} className="text-gray-700 dark:text-gray-300" />
           )}
-        </Button>
-        <Button
+        </ActionIcon>
+        <ActionIcon
           variant="subtle"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="p-2 md:hidden interactive-scale ripple-effect"
+          size="lg"
+          radius="xl"
+          className="md:hidden"
         >
-          <Menu size={30} />
-        </Button>
+          <Menu size={24} />
+        </ActionIcon>
       </Flex>
     </Flex>
   );

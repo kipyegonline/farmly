@@ -1,29 +1,29 @@
 "use client";
 import React from "react";
 import { Drawer, Stack, Text, Image } from "@mantine/core";
+import { useComputedColorScheme } from "@mantine/core";
 
 type MobileDrawerProps = {
   mobileMenuOpen: boolean;
   setMobileMenuOpen: (open: boolean) => void;
   categories: string[];
-  darkMode: boolean;
 };
 
 export default function MobileDrawer({
   mobileMenuOpen,
   setMobileMenuOpen,
   categories,
-  darkMode,
 }: MobileDrawerProps) {
+  const computedColorScheme = useComputedColorScheme("light");
+  const isDark = computedColorScheme === "dark";
+
   return (
     <Drawer
       opened={mobileMenuOpen}
       onClose={() => setMobileMenuOpen(false)}
       position="right"
       size="sm"
-      className={`md:hidden ${
-        darkMode ? " bg-gray-900 text-white" : "bg-white text-gray-900"
-      } `}
+      className="md:hidden"
       title={
         <Image
           src="/farmly_logo.png"
@@ -36,13 +36,9 @@ export default function MobileDrawer({
     >
       <Stack
         gap="lg"
-        className={`p-4 ${
-          darkMode ? " bg-gray-900 text-white" : "bg-white text-gray-900"
-        }`}
+        className="p-4 bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
       >
-        <Text
-          className={`text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 font-semibold`}
-        >
+        <Text className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 font-semibold">
           Categories
         </Text>
         {categories.map((category, index) => (

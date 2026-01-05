@@ -133,7 +133,8 @@ export async function getAllPosts(isDraftMode: boolean): Promise<any[]> {
     const entries = await fetchGraphQL(
       `query {
   
-      bookReaderCollection(where: { slug_exists: true }, order: date_DESC,limit:10, preview: ${isDraftMode ? "true" : "false"
+      bookReaderCollection(where: { slug_exists: true }, order: date_DESC,limit:10, preview: ${
+        isDraftMode ? "true" : "false"
       }) {
         items {
           ${POST_GRAPHQL_FIELDS}
@@ -152,10 +153,12 @@ export async function getAllPosts(isDraftMode: boolean): Promise<any[]> {
 export async function getAllNewsPosts(
   isDraftMode: boolean = false
 ): Promise<any[]> {
+  //bookReader
   const entries = await fetchGraphQL(
     `query {
-      news:bookReaderCollection( preview: ${isDraftMode ? "true" : "false"
-    }, limit:10, order: date_DESC) {
+      news:bookReaderCollection( preview: ${
+        isDraftMode ? "true" : "false"
+      }, limit:10, order: date_DESC) {
         posts:items {
           ${NEWS_POST_FIELDS}
         }
@@ -173,7 +176,8 @@ export async function getNewsPostBySlug(
 ): Promise<any> {
   const entry = await fetchGraphQL(
     `query {
-      newsPostCollection(where: { slug: "${slug}" }, preview: ${preview ? "true" : "false"
+      newsPostCollection(where: { slug: "${slug}" }, preview: ${
+      preview ? "true" : "false"
     }, limit: 1) {
         items {
           ${NEWS_POST_FIELDS}
@@ -192,7 +196,8 @@ export async function getPostAndMorePosts(
 ): Promise<any> {
   const entry = await fetchGraphQL(
     `query {
-      post:bookReaderCollection(where: { sys: { id: "${id}" } }, preview: ${preview ? "true" : "false"
+      post:bookReaderCollection(where: { sys: { id: "${id}" } }, preview: ${
+      preview ? "true" : "false"
     }, limit: 1) {
         items {
           ${NEWS_POST_FIELDS}
@@ -203,7 +208,8 @@ export async function getPostAndMorePosts(
   );
   const entries = await fetchGraphQL(
     `query {
-     posts: bookReaderCollection(where: { sys: { id_not: "${id}" } }, order: date_DESC, preview: ${preview ? "true" : "false"
+     posts: bookReaderCollection(where: { sys: { id_not: "${id}" } }, order: date_DESC, preview: ${
+      preview ? "true" : "false"
     }, limit: 4) {
         items {
           ${NEWS_POST_FIELDS}

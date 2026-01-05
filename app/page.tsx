@@ -58,7 +58,6 @@ export default async function Page() {
     <div className="container mx-auto px-0  ">
       {/**<HomePageComponent /> */}
 
-      <Divider />
       <Farmly />
     </div>
   );

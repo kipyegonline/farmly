@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   MantineProvider,
   createTheme,
@@ -8,11 +8,13 @@ import {
 } from "@mantine/core";
 import { RouterProgress } from "@/components/RouterProgress";
 import Footer from "@/components/ui/Footer";
+import { ScrollToTop } from "@/components/ui/ScrollToTop";
 import Header from "@/components/Header";
 import MobileDrawer from "@/components/Header/MobileDrawer";
 import { Sidebar } from "@/components/Sidebar/Sidebar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { ColorSchemeSync } from "./ColorSchemeSync";
 
 const categories = [
   "Sustainable Agriculture",
@@ -77,31 +79,17 @@ const queryClient = new QueryClient({
 });
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  const [darkMode, setDarkMode] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", darkMode);
-  }, [darkMode]);
-
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-  };
-
   return (
-    <div
-      className={`min-h-screen transition-colors duration-300 ${
-        darkMode ? "dark bg-gray-900 text-white" : "bg-white text-gray-900"
-      }`}
-    >
-      <section className="min-h-screen">
-        <QueryClientProvider client={queryClient}>
-          <MantineProvider theme={theme}>
+    <QueryClientProvider client={queryClient}>
+      <MantineProvider theme={theme} defaultColorScheme="auto">
+        <ColorSchemeSync />
+        <div className="min-h-screen transition-colors duration-300 bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+          <section className="min-h-screen">
             <RouterProgress />
             {/* Global Header */}
             <Header
-              darkMode={darkMode}
-              toggleDarkMode={toggleDarkMode}
               mobileMenuOpen={mobileMenuOpen}
               setMobileMenuOpen={setMobileMenuOpen}
             />
@@ -111,7 +99,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
                 mobileMenuOpen={mobileMenuOpen}
                 setMobileMenuOpen={setMobileMenuOpen}
                 categories={categories}
-                darkMode={darkMode}
               />
             </div>
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -120,11 +107,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
                 <Sidebar />
               </Flex>
             </main>
-          </MantineProvider>
-          <ReactQueryDevtools initialIsOpen={false} />
-        </QueryClientProvider>
-        <Footer />
-      </section>
-    </div>
+            <Footer />
+            <ScrollToTop />
+          </section>
+        </div>
+      </MantineProvider>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   );
 }
