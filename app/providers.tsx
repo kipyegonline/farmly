@@ -101,7 +101,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
                 categories={categories}
               />
             </div>
-            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8">
               <Flex gap="xl" className="relative">
                 <div className="flex-1">{children}</div>
                 <Sidebar />

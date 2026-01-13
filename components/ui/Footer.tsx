@@ -190,7 +190,7 @@ export default function Footer() {
         >
           {/* Logo and tagline */}
           <Box className="animate-in fade-in slide-in-from-left duration-700">
-            <Flex align="center" gap="sm" className="mb-3 hidden">
+            <Flex align="center" gap="sm" className="mb-3 !hidden">
               <Box className="p-2 bg-emerald-500/20 rounded-xl">
                 <Sprout size={32} className="text-emerald-400" />
               </Box>
@@ -244,11 +244,10 @@ export default function Footer() {
                       }}
                       placeholder="Enter your email"
                       disabled={status === "loading"}
-                      className={`w-full lg:w-72 px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gray-800/50 border rounded-xl text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed ${
-                        status === "error"
+                      className={`w-full lg:w-72 px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gray-800/50 border rounded-xl text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed ${status === "error"
                           ? "border-red-500 focus:ring-red-500"
                           : "border-gray-700"
-                      }`}
+                        }`}
                     />
                   </Box>
                   <button

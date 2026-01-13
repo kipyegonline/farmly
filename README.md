@@ -110,7 +110,7 @@ farmly/
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/yourusername/farmly.git
+   git clone https://github.com/kipyegonline/farmly
    cd farmly
    ```
 

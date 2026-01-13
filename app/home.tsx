@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { Box, Flex, Text, Stack, Skeleton, Pagination } from "@mantine/core";
-import { AlertCircle } from "lucide-react";
+
 import Article from "@/components/Article/Article";
 import { useQuery } from "@tanstack/react-query";
 import { getAllNewsPosts } from "@/lib/api";
@@ -9,6 +9,7 @@ import { transformContentfulPosts } from "@/lib/utils";
 import { usePagination } from "@/components/ui/PaginatedList";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ar } from "date-fns/locale";
+import LoadingSkeleton from "@/components/ui/LoadingSkeleon";
 
 const ARTICLES_PER_PAGE = 15;
 
@@ -40,12 +41,12 @@ export default function Farmly() {
     endIndex: articlesEndIndex,
     totalItems: totalArticles,
   } = usePagination(displayArticles, ARTICLES_PER_PAGE);
-
+  //console.log("displayArticles:___", displayArticles);
   return (
     <Box>
       <Text
-        //size={{ base: "sm", sm: "md", lg: "lg", xl: "xl" }}
-        className="!text-xl  !sm:text-2xl !md:text-4xl !lg:text-5xl font-bold mb-4 sm:mb-6 md:mb-8 animate-in slide-in-from-bottom duration-700 py-2 bg-gradient-to-r from-emerald-600 via-green-500 to-yellow-400 bg-clip-text text-transparent animate-gradient-sweep"
+        style={{ fontSize: "clamp(1.25rem, 2vw + 1rem, 2.5rem)" }}
+        className="font-bold mb-4 sm:mb-6 md:mb-8 animate-in slide-in-from-bottom duration-700 py-2 bg-gradient-to-r from-emerald-600 via-green-500 to-yellow-400 bg-clip-text text-transparent animate-gradient-sweep"
       >
         Latest in Sustainable Agriculture...
       </Text>
@@ -54,25 +55,7 @@ export default function Farmly() {
         {isLoading ? (
           <Stack gap="xl">
             {[1, 2, 3].map((i) => (
-              <Box
-                key={i}
-                className="p-4 rounded-2xl border border-gray-200 dark:border-gray-700"
-              >
-                <Flex gap="lg" className="flex-col md:flex-row">
-                  <Skeleton height={192} radius="xl" className="md:w-2/5" />
-                  <Box className="md:w-3/5">
-                    <Skeleton height={28} width="80%" mb="sm" />
-                    <Skeleton height={16} mb="xs" />
-                    <Skeleton height={16} mb="xs" />
-                    <Skeleton height={16} width="60%" mb="md" />
-                    <Flex gap="md">
-                      <Skeleton height={14} width={80} />
-                      <Skeleton height={14} width={100} />
-                      <Skeleton height={14} width={60} />
-                    </Flex>
-                  </Box>
-                </Flex>
-              </Box>
+              <LoadingSkeleton index={i} />
             ))}
           </Stack>
         ) : isError ? (

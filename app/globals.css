@@ -507,3 +507,164 @@ body {
 .animate-blurIn {
   animation: blurIn 1s ease-out forwards;
 }
+
+/* ================================
+   Markdown/Prose Content Overrides
+   Override default prose spacing for tighter layouts
+   ================================ */
+
+/* Base prose overrides - Mobile first */
+.prose p {
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+  padding: 0;
+}
+
+.prose h1 {
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.prose h2 {
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.prose h3 {
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.prose h4,
+.prose h5,
+.prose h6 {
+  margin-top: 0.75rem;
+  margin-bottom: 0.375rem;
+}
+
+.prose ul,
+.prose ol {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  padding-left: 1.25rem;
+}
+
+.prose li {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+  padding-left: 0.25rem;
+}
+
+.prose li > p {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.prose blockquote {
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+  padding-left: 1rem;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+.prose pre {
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+  padding: 0.75rem;
+}
+
+.prose hr {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Tablet and up (md: 768px+) */
+@media (min-width: 768px) {
+  .prose p {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .prose h1 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .prose h2 {
+    margin-top: 1.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .prose h3 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.625rem;
+  }
+
+  .prose h4,
+  .prose h5,
+  .prose h6 {
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .prose ul,
+  .prose ol {
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
+    padding-left: 1.5rem;
+  }
+
+  .prose li {
+    margin-top: 0.375rem;
+    margin-bottom: 0.375rem;
+    padding-left: 0.375rem;
+  }
+
+  .prose blockquote {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    padding-left: 1.25rem;
+  }
+
+  .prose pre {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+  }
+}
+
+/* Desktop (lg: 1024px+) */
+@media (min-width: 1024px) {
+  .prose p {
+    margin-top: 1.125rem;
+    margin-bottom: 1.125rem;
+  }
+
+  .prose h1 {
+    margin-top: 2.25rem;
+    margin-bottom: 1.125rem;
+  }
+
+  .prose h2 {
+    margin-top: 2rem;
+    margin-bottom: 0.875rem;
+  }
+
+  .prose h3 {
+    margin-top: 1.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .prose ul,
+  .prose ol {
+    margin-top: 0.875rem;
+    margin-bottom: 0.875rem;
+    padding-left: 1.75rem;
+  }
+
+  .prose li {
+    margin-top: 0.4375rem;
+    margin-bottom: 0.4375rem;
+  }
+}

@@ -117,7 +117,7 @@ function extractPostEntries(fetchResponse: any): any[] {
 export async function getPreviewPostBySlug(slug: string | null): Promise<any> {
   const entry = await fetchGraphQL(
     `query {
-      bookReaderCollection(where: { slug: "${slug}" }, preview: true, limit: 1) {
+      farmlyCollection(where: { slug: "${slug}" }, preview: true, limit: 1) {
         items {
           ${POST_GRAPHQL_FIELDS}
         }
@@ -133,7 +133,7 @@ export async function getAllPosts(isDraftMode: boolean): Promise<any[]> {
     const entries = await fetchGraphQL(
       `query {
   
-      bookReaderCollection(where: { slug_exists: true }, order: date_DESC,limit:10, preview: ${
+      farmlyCollection(where: { slug_exists: true }, order: date_DESC,limit:10, preview: ${
         isDraftMode ? "true" : "false"
       }) {
         items {
@@ -156,7 +156,7 @@ export async function getAllNewsPosts(
   //bookReader
   const entries = await fetchGraphQL(
     `query {
-      news:bookReaderCollection( preview: ${
+      news:farmlyCollection( preview: ${
         isDraftMode ? "true" : "false"
       }, limit:10, order: date_DESC) {
         posts:items {
@@ -176,7 +176,7 @@ export async function getNewsPostBySlug(
 ): Promise<any> {
   const entry = await fetchGraphQL(
     `query {
-      newsPostCollection(where: { slug: "${slug}" }, preview: ${
+      farmlyCollection(where: { slug: "${slug}" }, preview: ${
       preview ? "true" : "false"
     }, limit: 1) {
         items {
@@ -196,7 +196,7 @@ export async function getPostAndMorePosts(
 ): Promise<any> {
   const entry = await fetchGraphQL(
     `query {
-      post:bookReaderCollection(where: { sys: { id: "${id}" } }, preview: ${
+      post:farmlyCollection(where: { sys: { id: "${id}" } }, preview: ${
       preview ? "true" : "false"
     }, limit: 1) {
         items {
@@ -208,7 +208,7 @@ export async function getPostAndMorePosts(
   );
   const entries = await fetchGraphQL(
     `query {
-     posts: bookReaderCollection(where: { sys: { id_not: "${id}" } }, order: date_DESC, preview: ${
+     posts: farmlyCollection(where: { sys: { id_not: "${id}" } }, order: date_DESC, preview: ${
       preview ? "true" : "false"
     }, limit: 4) {
         items {

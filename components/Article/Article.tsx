@@ -43,7 +43,9 @@ export default function Article({
     <Link href={`/${article.id}`} className="block no-underline ">
       <Card
         ref={cardRef}
-        className={`group cursor-pointer relative overflow-hidden border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 ${isVisible ? "animate-fadeInUp" : "opacity-0"} hover-lift rounded-2xl`}
+        className={`group cursor-pointer relative overflow-hidden border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 ${
+          isVisible ? "animate-fadeInUp" : "opacity-0"
+        } hover-lift rounded-2xl`}
         style={{
           animationDelay: `${index * 100}ms`,
           transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
@@ -102,7 +104,8 @@ export default function Article({
           <Box className="md:w-3/5 flex flex-col justify-between py-2">
             <Stack gap="sm">
               <Text
-                className="text-xl md:text-2xl font-bold line-clamp-2 transition-all duration-300 text-gray-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400"
+                fw={700}
+                className="text-xl md:text-2xl line-clamp-2 transition-all duration-300 text-gray-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400"
                 style={{
                   transform: isHovered ? "translateX(8px)" : "translateX(0)",
                   transition: "transform 0.3s ease",
@@ -111,9 +114,7 @@ export default function Article({
                 {article.title}
               </Text>
 
-              <Text
-                className="line-clamp-3 leading-relaxed transition-all duration-300 text-gray-600 dark:text-gray-400"
-              >
+              <Text className="line-clamp-3 leading-relaxed transition-all duration-300 text-gray-600 dark:text-gray-400">
                 {article.excerpt}
               </Text>
             </Stack>
