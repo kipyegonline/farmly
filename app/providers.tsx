@@ -15,7 +15,7 @@ import { Sidebar } from "@/components/Sidebar/Sidebar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ColorSchemeSync } from "./ColorSchemeSync";
-
+import { AppProgressBar as ProgressBar } from "next-nprogress-bar";
 const categories = [
   "Sustainable Agriculture",
   "Organic Farming",
@@ -111,6 +111,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
             <ScrollToTop />
           </section>
         </div>
+        <ProgressBar
+          height="4px"
+          color="green"
+          options={{ showSpinner: false }}
+          shallowRouting
+        />
       </MantineProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>

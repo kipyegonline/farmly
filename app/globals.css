@@ -668,3 +668,77 @@ body {
     margin-bottom: 0.4375rem;
   }
 }
+
+/* Dark mode prose colors */
+.dark .prose,
+.prose-invert {
+  color: #e5e7eb; /* gray-200 */
+}
+
+.dark .prose p,
+.prose-invert p {
+  color: #d1d5db; /* gray-300 */
+}
+
+.dark .prose h1,
+.dark .prose h2,
+.dark .prose h3,
+.dark .prose h4,
+.dark .prose h5,
+.dark .prose h6,
+.prose-invert h1,
+.prose-invert h2,
+.prose-invert h3,
+.prose-invert h4,
+.prose-invert h5,
+.prose-invert h6 {
+  color: #ffffff;
+}
+
+.dark .prose strong,
+.prose-invert strong {
+  color: #ffffff;
+}
+
+.dark .prose a,
+.prose-invert a {
+  color: #34d399; /* emerald-400 */
+}
+
+.dark .prose a:hover,
+.prose-invert a:hover {
+  color: #6ee7b7; /* emerald-300 */
+}
+
+.dark .prose blockquote,
+.prose-invert blockquote {
+  color: #9ca3af; /* gray-400 */
+  border-left-color: #4b5563; /* gray-600 */
+}
+
+.dark .prose code,
+.prose-invert code {
+  color: #f9fafb; /* gray-50 */
+  background-color: #374151; /* gray-700 */
+}
+
+.dark .prose pre,
+.prose-invert pre {
+  background-color: #1f2937; /* gray-800 */
+  color: #e5e7eb; /* gray-200 */
+}
+
+.dark .prose li,
+.prose-invert li {
+  color: #d1d5db; /* gray-300 */
+}
+
+.dark .prose li::marker,
+.prose-invert li::marker {
+  color: #6b7280; /* gray-500 */
+}
+
+.dark .prose hr,
+.prose-invert hr {
+  border-color: #374151; /* gray-700 */
+}

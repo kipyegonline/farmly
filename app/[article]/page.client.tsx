@@ -10,6 +10,9 @@ import {
   Stack,
   Group,
   Title,
+  Image,
+  useMantineColorScheme,
+  useComputedColorScheme,
 } from "@mantine/core";
 import {
   Sun,
@@ -29,6 +32,7 @@ import {
 } from "lucide-react";
 import { notFound, useRouter } from "next/navigation";
 import { Content, Markdown } from "@/lib/markdown";
+import Link from "next/link";
 
 // Derived from actual UI usage
 interface CoverImage {
@@ -49,6 +53,7 @@ export interface Article {
   category?: string;
   readTime?: string;
   body?: Content;
+  tags?: string[];
 }
 
 interface ArticlePageProps {
@@ -59,7 +64,11 @@ interface ArticlePageProps {
 export default function ArticlePage({ post, morePosts }: ArticlePageProps) {
   const router = useRouter();
   const articleRef = useRef<HTMLDivElement>(null);
-  const [darkMode, setDarkMode] = useState(false);
+  const { setColorScheme } = useMantineColorScheme();
+  const computedColorScheme = useComputedColorScheme("light", {
+    getInitialValueInEffect: true,
+  });
+  const darkMode = computedColorScheme === "dark";
   const [showScrollAnimation, setShowScrollAnimation] = useState(true);
   const [liked, setLiked] = useState(false);
   const [scrollY, setScrollY] = useState(0);
@@ -74,8 +83,6 @@ export default function ArticlePage({ post, morePosts }: ArticlePageProps) {
   }, [morePosts, post?.sys.id]);
 
   useEffect(() => {
-    document.documentElement.classList.toggle("dark", darkMode);
-
     const handleScroll = () => {
       setScrollY(window.scrollY);
       if (window.scrollY > 100) {
@@ -99,7 +106,10 @@ export default function ArticlePage({ post, morePosts }: ArticlePageProps) {
 
         let progress = 0;
         if (scrolledPast > 0 && totalScrollDistance > 0) {
-          progress = Math.min(100, Math.max(0, (scrolledPast / totalScrollDistance) * 100));
+          progress = Math.min(
+            100,
+            Math.max(0, (scrolledPast / totalScrollDistance) * 100)
+          );
         }
 
         setReadingProgress(progress);
@@ -111,7 +121,7 @@ export default function ArticlePage({ post, morePosts }: ArticlePageProps) {
   }, [darkMode]);
 
   const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
+    setColorScheme(darkMode ? "light" : "dark");
   };
 
   const formatDate = (date: string | Date) => {
@@ -164,8 +174,9 @@ export default function ArticlePage({ post, morePosts }: ArticlePageProps) {
 
   return (
     <Box
-      className={`min-h-screen transition-colors duration-500 ${darkMode ? "dark bg-gray-900 text-white" : "bg-gray-50 text-gray-900"
-        }`}
+      className={`min-h-screen transition-colors duration-500 ${
+        darkMode ? "dark bg-gray-900 text-white" : "bg-gray-50 text-gray-900"
+      }`}
     >
       {/* Reading Progress Bar */}
       <Box
@@ -178,21 +189,37 @@ export default function ArticlePage({ post, morePosts }: ArticlePageProps) {
 
       {/* Header */}
       <Box
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 animate-slideInFromTop ${darkMode
-          ? "bg-gray-900/95 border-gray-700"
-          : "bg-white/95 border-gray-200"
-          } border-b backdrop-blur-md shadow-sm`}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 animate-slideInFromTop ${
+          darkMode
+            ? "bg-gray-900/95 border-gray-700"
+            : "bg-white/95 border-gray-200"
+        } border-b backdrop-blur-md shadow-sm`}
       >
         <Box className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Flex justify="space-between" align="center" className="h-16">
-            <Button
-              onClick={() => (location.pathname = "/")}
-              variant="subtle"
-              leftSection={<ArrowLeft size={18} />}
-              className="text-emerald-600 hover:text-emerald-700 font-medium interactive-scale ripple-effect transition-all duration-300 hover:translate-x-[-4px]"
-            >
-              Back to Articles
-            </Button>
+            <div className="flex gap-2 items-center">
+              {" "}
+              <div className="w-[120px]">
+                <Link href="/">
+                  {" "}
+                  <Image
+                    src="/farmly_logo.png"
+                    alt="Farmly Logo"
+                    width={120}
+                    height={40}
+                  />
+                </Link>{" "}
+              </div>
+              <Button
+                onClick={() => (location.pathname = "/")}
+                variant="subtle"
+                leftSection={<ArrowLeft size={18} />}
+                className="text-emerald-600 hover:text-emerald-700 font-medium interactive-scale ripple-effect transition-all duration-300 hover:translate-x-[-4px]"
+              >
+                Back to Articles
+              </Button>
+            </div>
+
             <Button
               variant="subtle"
               onClick={toggleDarkMode}
@@ -216,8 +243,9 @@ export default function ArticlePage({ post, morePosts }: ArticlePageProps) {
             className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-100"
             style={{
               backgroundImage: `url(${post.coverImage.url})`,
-              transform: `translateY(${scrollY * 0.5}px) scale(${1 + scrollY * 0.0002
-                })`,
+              transform: `translateY(${scrollY * 0.5}px) scale(${
+                1 + scrollY * 0.0002
+              })`,
             }}
           >
             <Box className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70" />
@@ -282,7 +310,11 @@ export default function ArticlePage({ post, morePosts }: ArticlePageProps) {
                 {post.author}
               </Text>
               {post?.date && (
-                <Flex align="center" gap="sm" className="text-white/70 flex-wrap">
+                <Flex
+                  align="center"
+                  gap="sm"
+                  className="text-white/70 flex-wrap"
+                >
                   <Calendar size={16} className="text-emerald-400" />
                   <Text size="sm" className="text-white/70">
                     {formatDate(post.date)}
@@ -316,8 +348,9 @@ export default function ArticlePage({ post, morePosts }: ArticlePageProps) {
       {/* Article Content */}
       <Box
         ref={articleRef}
-        className={`${darkMode ? "bg-gray-900" : "bg-white"
-          } transition-colors duration-300`}
+        className={`${
+          darkMode ? "bg-gray-900" : "bg-white"
+        } transition-colors duration-300`}
       >
         <Box className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10">
           <Flex gap="xl" className="relative">
@@ -326,24 +359,28 @@ export default function ArticlePage({ post, morePosts }: ArticlePageProps) {
               <Box className="max-w-none animate-in fade-in slide-in-from-bottom duration-700 delay-300">
                 {/* Article Tags */}
                 <Flex wrap="wrap" gap="xs" className="mb-8">
-                  {[].map((tag, index) => (
-                    <Text
-                      key={tag}
-                      className={`px-3 py-1 rounded-full text-sm font-medium cursor-pointer interactive-scale animate-fadeInUp ${darkMode
-                        ? "bg-gray-800 text-emerald-400 border border-gray-700 hover:bg-gray-700 hover:border-emerald-500"
-                        : "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 hover:border-emerald-400"
+                  {post?.tags &&
+                    post?.tags?.length > 0 &&
+                    post?.tags.map((tag, index) => (
+                      <Text
+                        key={tag}
+                        className={`px-3 py-1 rounded-full text-sm font-medium cursor-pointer interactive-scale animate-fadeInUp ${
+                          darkMode
+                            ? "bg-gray-800 text-emerald-400 border border-gray-700 hover:bg-gray-700 hover:border-emerald-500"
+                            : "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 hover:border-emerald-400"
                         } transition-all duration-300`}
-                      style={{ animationDelay: `${index * 50}ms` }}
-                    >
-                      #{tag}
-                    </Text>
-                  ))}
+                        style={{ animationDelay: `${index * 50}ms` }}
+                      >
+                        #{tag}
+                      </Text>
+                    ))}
                 </Flex>
 
                 {/* Article Body */}
                 <Box
-                  className={`prose hidden prose-lg max-w-none leading-relaxed ${darkMode ? "prose-invert" : ""
-                    } 
+                  className={`prose hidden prose-lg max-w-none leading-relaxed ${
+                    darkMode ? "prose-invert" : ""
+                  } 
                   prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-white
                   prose-h2:text-2xl prose-h2:mt-12 prose-h2:mb-6
                   prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-4
@@ -352,7 +389,11 @@ export default function ArticlePage({ post, morePosts }: ArticlePageProps) {
                   `}
                   dangerouslySetInnerHTML={{ __html: post.body ?? "" }}
                 />
-                <Box className="prose prose-lg max-w-none my-6 md:my-10 lg:my-12 prose-p:py-2 prose-p:leading-relaxed prose-headings:mt-8 prose-headings:mb-4">
+                <Box
+                  className={`prose prose-lg max-w-none my-6 md:my-10 lg:my-12 prose-p:py-2 prose-p:leading-relaxed prose-headings:mt-8 prose-headings:mb-4 ${
+                    darkMode ? "prose-invert" : ""
+                  }`}
+                >
                   <Markdown content={post?.body as Content} />
                 </Box>
                 {/* Engagement Stats */}
@@ -368,15 +409,17 @@ export default function ArticlePage({ post, morePosts }: ArticlePageProps) {
                       leftSection={
                         <Heart
                           size={18}
-                          className={`transition-all duration-300 ${liked
-                            ? "fill-red-500 text-red-500 animate-pulse"
-                            : ""
-                            }`}
+                          className={`transition-all duration-300 ${
+                            liked
+                              ? "fill-red-500 text-red-500 animate-pulse"
+                              : ""
+                          }`}
                         />
                       }
                       onClick={() => setLiked(!liked)}
-                      className={`interactive-scale ripple-effect transition-all duration-300 ${liked ? "text-red-500 scale-110" : "text-gray-500"
-                        } hover:text-red-500`}
+                      className={`interactive-scale ripple-effect transition-all duration-300 ${
+                        liked ? "text-red-500 scale-110" : "text-gray-500"
+                      } hover:text-red-500`}
                     >
                       {10} Likes
                     </Button>
@@ -453,10 +496,11 @@ export default function ArticlePage({ post, morePosts }: ArticlePageProps) {
               <Box className="hidden lg:block w-2/5">
                 <Box className="sticky top-24">
                   <Card
-                    className={`p-6 card-shine ${darkMode
-                      ? "bg-gray-800 border-gray-700"
-                      : "bg-white border-gray-200"
-                      } border shadow-lg hover:shadow-xl animate-slideInFromRight stagger-5 transition-all duration-500 rounded-2xl`}
+                    className={`p-6 card-shine ${
+                      darkMode
+                        ? "bg-gray-800 border-gray-700"
+                        : "bg-white border-gray-200"
+                    } border shadow-lg hover:shadow-xl animate-slideInFromRight stagger-5 transition-all duration-500 rounded-2xl`}
                   >
                     <Text className="font-bold text-lg mb-6 text-gradient-animated">
                       Recommended Reading
@@ -467,10 +511,11 @@ export default function ArticlePage({ post, morePosts }: ArticlePageProps) {
                           <Box
                             key={article.sys.id}
                             onClick={() => router.push(`/${article.sys.id}`)}
-                            className={`group cursor-pointer p-3 rounded-lg transition-all duration-300 hover:shadow-lg animate-fadeInUp card-shine ${darkMode
-                              ? "hover:bg-gray-700"
-                              : "hover:bg-gray-50"
-                              }`}
+                            className={`group cursor-pointer p-3 rounded-lg transition-all duration-300 hover:shadow-lg animate-fadeInUp card-shine ${
+                              darkMode
+                                ? "hover:bg-gray-700"
+                                : "hover:bg-gray-50"
+                            }`}
                             style={{ animationDelay: `${(index + 6) * 100}ms` }}
                           >
                             <Box className="relative overflow-hidden rounded-md mb-3 shadow-md">
@@ -524,10 +569,11 @@ export default function ArticlePage({ post, morePosts }: ArticlePageProps) {
                 <Card
                   key={article?.sys?.id}
                   onClick={() => router.push(`/${article?.sys?.id}`)}
-                  className={`group cursor-pointer transition-all duration-500 hover:shadow-xl border card-shine rounded-2xl ${darkMode
-                    ? "border-gray-700 bg-gray-800"
-                    : "border-gray-200 bg-white"
-                    } animate-fadeInUp hover-lift`}
+                  className={`group cursor-pointer transition-all duration-500 hover:shadow-xl border card-shine rounded-2xl ${
+                    darkMode
+                      ? "border-gray-700 bg-gray-800"
+                      : "border-gray-200 bg-white"
+                  } animate-fadeInUp hover-lift`}
                   style={{ animationDelay: `${index * 150}ms` }}
                 >
                   <Flex gap="md">
