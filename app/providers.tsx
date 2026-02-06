@@ -15,7 +15,6 @@ import { Sidebar } from "@/components/Sidebar/Sidebar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ColorSchemeSync } from "./ColorSchemeSync";
-import { AppProgressBar as ProgressBar } from "next-nprogress-bar";
 const categories = [
   "Sustainable Agriculture",
   "Organic Farming",
@@ -85,9 +84,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <QueryClientProvider client={queryClient}>
       <MantineProvider theme={theme} defaultColorScheme="auto">
         <ColorSchemeSync />
+        <RouterProgress />
         <div className="min-h-screen transition-colors duration-300 bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
           <section className="min-h-screen">
-            <RouterProgress />
             {/* Global Header */}
             <Header
               mobileMenuOpen={mobileMenuOpen}
@@ -111,12 +110,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
             <ScrollToTop />
           </section>
         </div>
-        <ProgressBar
-          height="4px"
-          color="green"
-          options={{ showSpinner: false }}
-          shallowRouting
-        />
       </MantineProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>

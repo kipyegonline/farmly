@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
+
 import {
   Box,
   Flex,
@@ -29,10 +30,15 @@ import {
   Heart,
   MessageCircle,
   BookOpen,
+  AlertTriangle,
+  RefreshCw,
+  Home,
 } from "lucide-react";
 import { notFound, useRouter } from "next/navigation";
 import { Content, Markdown } from "@/lib/markdown";
 import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
+import { getAllPosts, getPostAndMorePosts } from "@/lib/api";
 
 // Derived from actual UI usage
 interface CoverImage {
@@ -56,12 +62,179 @@ export interface Article {
   tags?: string[];
 }
 
-interface ArticlePageProps {
-  post: Article;
-  morePosts: Article[];
+interface ArticleErrorProps {
+  error?: Error | null;
+  onRetry?: () => void;
 }
 
-export default function ArticlePage({ post, morePosts }: ArticlePageProps) {
+export function ArticleError({ error, onRetry }: ArticleErrorProps) {
+  const computedColorScheme = useComputedColorScheme("light", {
+    getInitialValueInEffect: true,
+  });
+  const darkMode = computedColorScheme === "dark";
+  const router = useRouter();
+
+  return (
+    <Box
+      className={`min-h-[70vh] flex items-center justify-center transition-colors duration-500 px-4 ${
+        darkMode ? "bg-gray-900" : "bg-gray-50"
+      }`}
+    >
+      <Box className="w-full max-w-md mx-auto text-center">
+        <Flex direction="column" align="center" gap="lg">
+          {/* Animated error icon */}
+          <Box className="relative">
+            <Box
+              className="w-20 h-20 sm:w-24 sm:h-24 rounded-full flex items-center justify-center"
+              style={{
+                background: darkMode
+                  ? "radial-gradient(circle, rgba(239,68,68,0.15) 0%, transparent 70%)"
+                  : "radial-gradient(circle, rgba(239,68,68,0.1) 0%, transparent 70%)",
+                animation: "errorPulse 2.5s ease-in-out infinite",
+              }}
+            >
+              <Box
+                className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-red-400 via-red-500 to-rose-600 flex items-center justify-center shadow-lg shadow-red-500/25"
+                style={{
+                  animation: "errorShake 3s ease-in-out infinite",
+                }}
+              >
+                <AlertTriangle
+                  size={28}
+                  className="text-white drop-shadow-sm"
+                  style={{
+                    animation: "errorFloat 2s ease-in-out infinite",
+                  }}
+                />
+              </Box>
+            </Box>
+            {/* Decorative ring */}
+            <Box
+              className="absolute inset-0 w-20 h-20 sm:w-24 sm:h-24 rounded-full border-2 border-dashed border-red-300/40"
+              style={{
+                animation: "spin 8s linear infinite",
+              }}
+            />
+          </Box>
+
+          {/* Error title */}
+          <Title
+            order={3}
+            fw={700}
+            className={`text-lg sm:text-xl ${
+              darkMode ? "text-white" : "text-gray-900"
+            }`}
+            style={{
+              animation: "fadeInUp 0.5s ease-out both",
+              animationDelay: "0.15s",
+            }}
+          >
+            Oops! Something went wrong
+          </Title>
+
+          {/* Error description */}
+          <Text
+            className={`text-sm sm:text-base leading-relaxed max-w-sm ${
+              darkMode ? "text-gray-400" : "text-gray-500"
+            }`}
+            style={{
+              animation: "fadeInUp 0.5s ease-out both",
+              animationDelay: "0.25s",
+            }}
+          >
+            {error?.message ||
+              "We couldn\u2019t load this article. It might be temporarily unavailable or there\u2019s a connection issue."}
+          </Text>
+
+          {/* Divider */}
+          <Box
+            className={`w-16 h-0.5 rounded-full ${
+              darkMode ? "bg-gray-700" : "bg-gray-200"
+            }`}
+            style={{
+              animation:
+                "fadeInUp 0.5s ease-out both, scaleX 0.6s ease-out both",
+              animationDelay: "0.3s",
+            }}
+          />
+
+          {/* Action buttons */}
+          <Flex
+            gap="md"
+            wrap="wrap"
+            justify="center"
+            style={{
+              animation: "fadeInUp 0.5s ease-out both",
+              animationDelay: "0.4s",
+            }}
+          >
+            {onRetry && (
+              <Button
+                onClick={onRetry}
+                leftSection={
+                  <RefreshCw
+                    size={16}
+                    style={{ animation: "none" }}
+                    className="group-hover:animate-spin"
+                  />
+                }
+                className="group bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 transition-all duration-300 hover:scale-[1.03] active:scale-[0.98]"
+                radius="xl"
+                size="md"
+              >
+                Try Again
+              </Button>
+            )}
+            <Button
+              onClick={() => router.push("/")}
+              leftSection={<Home size={16} />}
+              variant="outline"
+              className={`transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] ${
+                darkMode
+                  ? "border-gray-600 text-gray-300 hover:bg-gray-800 hover:border-gray-500"
+                  : "border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400"
+              }`}
+              radius="xl"
+              size="md"
+            >
+              Back to Home
+            </Button>
+          </Flex>
+        </Flex>
+      </Box>
+
+      <style>{`
+        @keyframes errorPulse {
+          0%, 100% { transform: scale(1); opacity: 1; }
+          50% { transform: scale(1.08); opacity: 0.85; }
+        }
+        @keyframes errorShake {
+          0%, 100% { transform: rotate(0deg); }
+          10% { transform: rotate(-3deg); }
+          20% { transform: rotate(3deg); }
+          30% { transform: rotate(0deg); }
+        }
+        @keyframes errorFloat {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-3px); }
+        }
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(12px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
+    </Box>
+  );
+}
+
+interface ArticlePageProps {
+  postId: string;
+}
+
+export default function ArticlePage({ postId }: ArticlePageProps) {
   const router = useRouter();
   const articleRef = useRef<HTMLDivElement>(null);
   const { setColorScheme } = useMantineColorScheme();
@@ -73,12 +246,25 @@ export default function ArticlePage({ post, morePosts }: ArticlePageProps) {
   const [liked, setLiked] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const [readingProgress, setReadingProgress] = useState(0);
+  const {
+    data: { post, morePosts } = {},
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["article", postId],
+    queryFn: async () => {
+      const { post, morePosts } = await getPostAndMorePosts(postId, false);
+
+      return { post, morePosts };
+    },
+  });
 
   // Filter out the current article from recommended reading
   const recommendedPosts = React.useMemo(() => {
     if (!morePosts || !post) return [];
     return morePosts.filter(
-      (article: Article) => article?.sys?.id !== post?.sys?.id
+      (article: Article) => article?.sys?.id !== post?.sys?.id,
     );
   }, [morePosts, post?.sys.id]);
 
@@ -108,7 +294,7 @@ export default function ArticlePage({ post, morePosts }: ArticlePageProps) {
         if (scrolledPast > 0 && totalScrollDistance > 0) {
           progress = Math.min(
             100,
-            Math.max(0, (scrolledPast / totalScrollDistance) * 100)
+            Math.max(0, (scrolledPast / totalScrollDistance) * 100),
           );
         }
 
@@ -144,17 +330,17 @@ export default function ArticlePage({ post, morePosts }: ArticlePageProps) {
       switch (platform) {
         case "facebook":
           shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-            window.location.href
+            window.location.href,
           )}`;
           break;
         case "twitter":
           shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-            post?.title ?? ""
+            post?.title ?? "",
           )}&url=${encodeURIComponent(window.location.href)}`;
           break;
         case "linkedin":
           shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
-            window.location.href
+            window.location.href,
           )}`;
           break;
         case "copy":
@@ -171,6 +357,216 @@ export default function ArticlePage({ post, morePosts }: ArticlePageProps) {
       }
     }
   };
+  if (isLoading) {
+    return (
+      <Box
+        className={`min-h-screen flex items-center justify-center transition-colors duration-500 ${
+          darkMode ? "bg-gray-900" : "bg-gray-50"
+        }`}
+      >
+        <Box className="w-full max-w-2xl mx-auto px-4">
+          {/* Animated logo / spinner area */}
+          <Flex direction="column" align="center" gap="xl">
+            {/* Pulsing leaf icon */}
+            <Box className="relative">
+              <Box
+                className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-emerald-400 via-green-500 to-emerald-600 animate-pulse shadow-lg shadow-emerald-500/30"
+                style={{
+                  animation: "pulse 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+                }}
+              />
+              <Box
+                className="absolute inset-0 w-16 h-16 sm:w-20 sm:h-20 rounded-full border-[3px] border-transparent border-t-emerald-400 border-r-emerald-300"
+                style={{
+                  animation: "spin 1.2s linear infinite",
+                }}
+              />
+              <Box
+                className="absolute inset-2 sm:inset-3 rounded-full bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center shadow-inner"
+                style={{
+                  animation: "pulse 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+                }}
+              >
+                <BookOpen
+                  size={20}
+                  className="text-white drop-shadow-sm"
+                  style={{
+                    animation: "bounce 2s ease-in-out infinite",
+                  }}
+                />
+              </Box>
+            </Box>
+
+            {/* Loading text */}
+            <Text
+              fw={600}
+              className={`text-sm sm:text-base tracking-widest uppercase ${
+                darkMode ? "text-emerald-400" : "text-emerald-600"
+              }`}
+              style={{
+                animation: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+              }}
+            >
+              Loading article…
+            </Text>
+
+            {/* Skeleton preview card */}
+            <Box
+              className={`w-full rounded-2xl overflow-hidden border ${
+                darkMode
+                  ? "bg-gray-800/60 border-gray-700/50"
+                  : "bg-white/80 border-gray-200/60"
+              } backdrop-blur-sm shadow-xl`}
+            >
+              {/* Cover image skeleton */}
+              <Box
+                className={`w-full h-44 sm:h-56 ${
+                  darkMode ? "bg-gray-700" : "bg-gray-200"
+                }`}
+                style={{
+                  background: darkMode
+                    ? "linear-gradient(110deg, #374151 8%, #4b5563 18%, #374151 33%)"
+                    : "linear-gradient(110deg, #e5e7eb 8%, #f3f4f6 18%, #e5e7eb 33%)",
+                  backgroundSize: "200% 100%",
+                  animation: "shimmer 1.5s linear infinite",
+                }}
+              />
+
+              <Box className="p-5 sm:p-6 space-y-4">
+                {/* Category badge skeleton */}
+                <Box
+                  className={`h-6 w-32 rounded-full ${
+                    darkMode ? "bg-gray-700" : "bg-gray-200"
+                  }`}
+                  style={{
+                    background: darkMode
+                      ? "linear-gradient(110deg, #374151 8%, #4b5563 18%, #374151 33%)"
+                      : "linear-gradient(110deg, #e5e7eb 8%, #f3f4f6 18%, #e5e7eb 33%)",
+                    backgroundSize: "200% 100%",
+                    animation: "shimmer 1.5s linear infinite 0.1s",
+                  }}
+                />
+
+                {/* Title skeleton */}
+                <Box className="space-y-2">
+                  <Box
+                    className={`h-7 sm:h-8 w-full rounded-lg ${
+                      darkMode ? "bg-gray-700" : "bg-gray-200"
+                    }`}
+                    style={{
+                      background: darkMode
+                        ? "linear-gradient(110deg, #374151 8%, #4b5563 18%, #374151 33%)"
+                        : "linear-gradient(110deg, #e5e7eb 8%, #f3f4f6 18%, #e5e7eb 33%)",
+                      backgroundSize: "200% 100%",
+                      animation: "shimmer 1.5s linear infinite 0.2s",
+                    }}
+                  />
+                  <Box
+                    className={`h-7 sm:h-8 w-3/4 rounded-lg ${
+                      darkMode ? "bg-gray-700" : "bg-gray-200"
+                    }`}
+                    style={{
+                      background: darkMode
+                        ? "linear-gradient(110deg, #374151 8%, #4b5563 18%, #374151 33%)"
+                        : "linear-gradient(110deg, #e5e7eb 8%, #f3f4f6 18%, #e5e7eb 33%)",
+                      backgroundSize: "200% 100%",
+                      animation: "shimmer 1.5s linear infinite 0.3s",
+                    }}
+                  />
+                </Box>
+
+                {/* Excerpt skeleton lines */}
+                <Box className="space-y-2 pt-2">
+                  {[100, 92, 80, 60].map((width, i) => (
+                    <Box
+                      key={i}
+                      className={`h-4 rounded-md ${
+                        darkMode ? "bg-gray-700" : "bg-gray-200"
+                      }`}
+                      style={{
+                        width: `${width}%`,
+                        background: darkMode
+                          ? "linear-gradient(110deg, #374151 8%, #4b5563 18%, #374151 33%)"
+                          : "linear-gradient(110deg, #e5e7eb 8%, #f3f4f6 18%, #e5e7eb 33%)",
+                        backgroundSize: "200% 100%",
+                        animation: `shimmer 1.5s linear infinite ${0.4 + i * 0.1}s`,
+                      }}
+                    />
+                  ))}
+                </Box>
+
+                {/* Author row skeleton */}
+                <Flex align="center" gap="sm" className="pt-3">
+                  <Box
+                    className={`w-10 h-10 rounded-full flex-shrink-0 ${
+                      darkMode ? "bg-gray-700" : "bg-gray-200"
+                    }`}
+                    style={{
+                      background: darkMode
+                        ? "linear-gradient(110deg, #374151 8%, #4b5563 18%, #374151 33%)"
+                        : "linear-gradient(110deg, #e5e7eb 8%, #f3f4f6 18%, #e5e7eb 33%)",
+                      backgroundSize: "200% 100%",
+                      animation: "shimmer 1.5s linear infinite 0.8s",
+                    }}
+                  />
+                  <Box className="space-y-1.5 flex-1">
+                    <Box
+                      className={`h-3.5 w-28 rounded-md ${
+                        darkMode ? "bg-gray-700" : "bg-gray-200"
+                      }`}
+                      style={{
+                        background: darkMode
+                          ? "linear-gradient(110deg, #374151 8%, #4b5563 18%, #374151 33%)"
+                          : "linear-gradient(110deg, #e5e7eb 8%, #f3f4f6 18%, #e5e7eb 33%)",
+                        backgroundSize: "200% 100%",
+                        animation: "shimmer 1.5s linear infinite 0.9s",
+                      }}
+                    />
+                    <Box
+                      className={`h-3 w-40 rounded-md ${
+                        darkMode ? "bg-gray-700" : "bg-gray-200"
+                      }`}
+                      style={{
+                        background: darkMode
+                          ? "linear-gradient(110deg, #374151 8%, #4b5563 18%, #374151 33%)"
+                          : "linear-gradient(110deg, #e5e7eb 8%, #f3f4f6 18%, #e5e7eb 33%)",
+                        backgroundSize: "200% 100%",
+                        animation: "shimmer 1.5s linear infinite 1.0s",
+                      }}
+                    />
+                  </Box>
+                </Flex>
+              </Box>
+            </Box>
+          </Flex>
+        </Box>
+
+        {/* Shimmer keyframe injected inline */}
+        <style>{`
+          @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+          }
+          @keyframes spin {
+            to { transform: rotate(360deg); }
+          }
+          @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+          }
+        `}</style>
+      </Box>
+    );
+  }
+
+  if (isError || !post) {
+    return (
+      <ArticleError
+        error={error as Error | null}
+        onRetry={() => window.location.reload()}
+      />
+    );
+  }
 
   return (
     <Box
@@ -238,7 +634,7 @@ export default function ArticlePage({ post, morePosts }: ArticlePageProps) {
       {/* Hero Section */}
       <Box className="relative h-screen flex items-center justify-center overflow-hidden">
         {/* Background Image with Overlay and Parallax OR Dark Fallback */}
-        {post.coverImage ? (
+        {post && post.coverImage ? (
           <Box
             className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-100"
             style={{
@@ -361,7 +757,7 @@ export default function ArticlePage({ post, morePosts }: ArticlePageProps) {
                 <Flex wrap="wrap" gap="xs" className="mb-8">
                   {post?.tags &&
                     post?.tags?.length > 0 &&
-                    post?.tags.map((tag, index) => (
+                    post?.tags.map((tag: string, index: number) => (
                       <Text
                         key={tag}
                         className={`px-3 py-1 rounded-full text-sm font-medium cursor-pointer interactive-scale animate-fadeInUp ${
@@ -548,7 +944,7 @@ export default function ArticlePage({ post, morePosts }: ArticlePageProps) {
                               <Text>{article.readTime}</Text>
                             </Flex>
                           </Box>
-                        )
+                        ),
                       )}
                     </Stack>
                   </Card>
@@ -560,55 +956,57 @@ export default function ArticlePage({ post, morePosts }: ArticlePageProps) {
           </Flex>
 
           {/* Mobile Recommended Articles - Show at bottom on mobile */}
-          <Box className="lg:hidden mt-16">
-            <Text className="text-2xl font-bold mb-6 text-gradient-animated">
-              You might also like
-            </Text>
-            <Box className="grid gap-6">
-              {recommendedPosts.map((article: Article, index: number) => (
-                <Card
-                  key={article?.sys?.id}
-                  onClick={() => router.push(`/${article?.sys?.id}`)}
-                  className={`group cursor-pointer transition-all duration-500 hover:shadow-xl border card-shine rounded-2xl ${
-                    darkMode
-                      ? "border-gray-700 bg-gray-800"
-                      : "border-gray-200 bg-white"
-                  } animate-fadeInUp hover-lift`}
-                  style={{ animationDelay: `${index * 150}ms` }}
-                >
-                  <Flex gap="md">
-                    <Box className="w-24 h-24 flex-shrink-0">
-                      {article.coverImage?.url ? (
-                        <img
-                          src={article.coverImage.url}
-                          alt={article.title}
-                          className="w-full h-full object-cover rounded-lg transition-all duration-500 group-hover:scale-110 group-hover:rotate-2 shadow-md"
-                        />
-                      ) : (
-                        <Box className="w-full h-full bg-gradient-to-br from-gray-600 to-gray-800 rounded-lg flex items-center justify-center shadow-md">
-                          <BookOpen size={28} className="text-gray-400" />
-                        </Box>
-                      )}
-                    </Box>
-                    <Box className="flex-1">
-                      <Text className="font-semibold line-clamp-2 mb-2 group-hover:text-emerald-600 transition-all duration-300 group-hover:translate-x-2">
-                        {article.title}
-                      </Text>
-                      <Flex
-                        align="center"
-                        gap="xs"
-                        className="text-sm text-gray-500 dark:text-gray-400 transition-colors duration-300 group-hover:text-emerald-600"
-                      >
-                        <Text>{article.author}</Text>
-                        <Text>•</Text>
-                        <Text>{article.readTime}</Text>
-                      </Flex>
-                    </Box>
-                  </Flex>
-                </Card>
-              ))}
+          {recommendedPosts.length > 0 && (
+            <Box className="lg:hidden mt-16">
+              <Text className="text-2xl font-bold mb-6 text-gradient-animated">
+                You might also like
+              </Text>
+              <Box className="grid gap-6">
+                {recommendedPosts.map((article: Article, index: number) => (
+                  <Card
+                    key={article?.sys?.id}
+                    onClick={() => router.push(`/${article?.sys?.id}`)}
+                    className={`group cursor-pointer transition-all duration-500 hover:shadow-xl border card-shine rounded-2xl ${
+                      darkMode
+                        ? "border-gray-700 bg-gray-800"
+                        : "border-gray-200 bg-white"
+                    } animate-fadeInUp hover-lift`}
+                    style={{ animationDelay: `${index * 150}ms` }}
+                  >
+                    <Flex gap="md">
+                      <Box className="w-24 h-24 flex-shrink-0">
+                        {article.coverImage?.url ? (
+                          <img
+                            src={article.coverImage.url}
+                            alt={article.title}
+                            className="w-full h-full object-cover rounded-lg transition-all duration-500 group-hover:scale-110 group-hover:rotate-2 shadow-md"
+                          />
+                        ) : (
+                          <Box className="w-full h-full bg-gradient-to-br from-gray-600 to-gray-800 rounded-lg flex items-center justify-center shadow-md">
+                            <BookOpen size={28} className="text-gray-400" />
+                          </Box>
+                        )}
+                      </Box>
+                      <Box className="flex-1">
+                        <Text className="font-semibold line-clamp-2 mb-2 group-hover:text-emerald-600 transition-all duration-300 group-hover:translate-x-2">
+                          {article.title}
+                        </Text>
+                        <Flex
+                          align="center"
+                          gap="xs"
+                          className="text-sm text-gray-500 dark:text-gray-400 transition-colors duration-300 group-hover:text-emerald-600"
+                        >
+                          <Text>{article.author}</Text>
+                          <Text>•</Text>
+                          <Text>{article.readTime}</Text>
+                        </Flex>
+                      </Box>
+                    </Flex>
+                  </Card>
+                ))}
+              </Box>
             </Box>
-          </Box>
+          )}
         </Box>
       </Box>
     </Box>

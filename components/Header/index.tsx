@@ -33,14 +33,14 @@ export default function Header({
   const isMobile = useMediaQuery("(max-width: 768px)");
   return (
     <Box
-      className={`sticky top-0 z-50 transition-all duration-500 ${
+      className={`!sticky top-0 z-50 transition-all duration-500 ${
         scrolled
           ? isDark
             ? "bg-gray-900/95 border-gray-700 shadow-xl"
             : "bg-white/95 border-gray-200 shadow-xl"
           : isDark
-          ? "bg-gray-900/80 border-gray-700/50"
-          : "bg-white/80 border-gray-200/50"
+            ? "bg-gray-900/80 border-gray-700/50"
+            : "bg-white/80 border-gray-200/50"
       } border-b backdrop-blur-xl`}
     >
       <Box className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">

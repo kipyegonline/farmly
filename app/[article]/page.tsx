@@ -39,11 +39,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ArticlePage({ params }: Props) {
-  const { post, morePosts } = await getPostAndMorePosts(params.article, false);
-
   return (
     <Container size={"lg"}>
-      <ArticlePageClient post={post} morePosts={morePosts} />
+      <ArticlePageClient postId={params?.article ?? ""} />
     </Container>
   );
 }

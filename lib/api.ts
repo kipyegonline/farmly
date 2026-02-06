@@ -100,7 +100,6 @@ function extractPost(fetchResponse: any): any {
 }
 
 function extractPostEntries(fetchResponse: any): any[] {
-  console.log(fetchResponse, "______fetchResponse");
   if (fetchResponse) {
     const {
       data: {
@@ -123,7 +122,7 @@ export async function getPreviewPostBySlug(slug: string | null): Promise<any> {
         }
       }
     }`,
-    true
+    true,
   );
   return extractPost(entry);
 }
@@ -141,7 +140,7 @@ export async function getAllPosts(isDraftMode: boolean): Promise<any[]> {
         }
       }
     }`,
-      isDraftMode
+      isDraftMode,
     );
 
     return extractPost(entries);
@@ -151,7 +150,7 @@ export async function getAllPosts(isDraftMode: boolean): Promise<any[]> {
 }
 
 export async function getAllNewsPosts(
-  isDraftMode: boolean = false
+  isDraftMode: boolean = false,
 ): Promise<any[]> {
   //bookReader
   const entries = await fetchGraphQL(
@@ -164,27 +163,27 @@ export async function getAllNewsPosts(
         }
       }
     }`,
-    isDraftMode
+    isDraftMode,
   );
-  console.log("entries:", entries);
+  //console.log("entries:", entries);
   return entries?.data?.news?.posts || [];
 }
 
 export async function getNewsPostBySlug(
   slug: string,
-  preview: boolean = false
+  preview: boolean = false,
 ): Promise<any> {
   const entry = await fetchGraphQL(
     `query {
       farmlyCollection(where: { slug: "${slug}" }, preview: ${
-      preview ? "true" : "false"
-    }, limit: 1) {
+        preview ? "true" : "false"
+      }, limit: 1) {
         items {
           ${NEWS_POST_FIELDS}
         }
       }
     }`,
-    preview
+    preview,
   );
 
   return entry?.data?.newsPostCollection?.items?.[0] || null;
@@ -192,31 +191,31 @@ export async function getNewsPostBySlug(
 
 export async function getPostAndMorePosts(
   id: string,
-  preview: boolean
+  preview: boolean,
 ): Promise<any> {
   const entry = await fetchGraphQL(
     `query {
       post:farmlyCollection(where: { sys: { id: "${id}" } }, preview: ${
-      preview ? "true" : "false"
-    }, limit: 1) {
+        preview ? "true" : "false"
+      }, limit: 1) {
         items {
           ${NEWS_POST_FIELDS}
         }
       }
     }`,
-    preview
+    preview,
   );
   const entries = await fetchGraphQL(
     `query {
      posts: farmlyCollection(where: { sys: { id_not: "${id}" } }, order: date_DESC, preview: ${
-      preview ? "true" : "false"
-    }, limit: 4) {
+       preview ? "true" : "false"
+     }, limit: 4) {
         items {
           ${NEWS_POST_FIELDS}
         }
       }
     }`,
-    preview
+    preview,
   );
 
   return {
